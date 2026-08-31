@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A guided, read-aloud subconscious rewiring session - grounding, 50 belief tests, release, rewires, and sealing.">
+<title>Rewired for Success</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Pinyon+Script&family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --cream:#fff8ef; --card:#fffdf8; --ink:#2b1a1e; --ink-soft:#5c4a4b;
+    --burgundy:#800020; --forest:#366049; --forest-deep:#2a4c3a;
+    --sage:#729377; --gold:#c6a664; --gold-soft:#e9d9b8; --line:#e8dcc8;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--cream); color:var(--ink);
+    font-family:'Montserrat',Verdana,sans-serif; font-size:16px; line-height:1.6;
+    min-height:100vh;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:40px 20px 140px}
+  /* ---------- header ---------- */
+  header{text-align:center; margin-bottom:34px}
+  .script-accent{
+    font-family:'Pinyon Script',cursive; color:var(--gold); font-size:44px; line-height:1;
+    display:block; margin-bottom:2px;
+  }
+  h1{
+    font-family:'Playfair Display',Georgia,serif; font-weight:900; color:var(--burgundy);
+    font-size:clamp(30px,6vw,44px); margin:0 0 10px; letter-spacing:.01em; text-wrap:balance;
+  }
+  .tagline{
+    text-transform:uppercase; letter-spacing:.18em; font-size:12px; font-weight:600; color:var(--forest);
+  }
+  /* ---------- phase chips ---------- */
+  .phases{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:26px 0 30px}
+  .phase{
+    border:1px solid var(--line); background:var(--card); color:var(--ink-soft);
+    border-radius:999px; padding:7px 14px; font-size:12px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.08em; cursor:pointer; font-family:inherit;
+  }
+  .phase:hover{border-color:var(--sage)}
+  .phase.active{background:var(--forest); border-color:var(--forest); color:var(--cream)}
+  .phase.done{color:var(--forest); border-color:var(--sage)}
+  .phase:focus-visible,button:focus-visible{outline:3px solid var(--gold); outline-offset:2px}
+  /* ---------- setup card ---------- */
+  .panel{
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:26px 26px 22px; margin-bottom:22px;
+  }
+  .panel h2{
+    font-family:'Playfair Display',Georgia,serif; color:var(--burgundy); font-weight:700;
+    font-size:21px; margin:0 0 12px;
+  }
+  .panel p{margin:0 0 14px; color:var(--ink-soft); font-size:15px}
+  .field{margin-bottom:16px}
+  .field label{
+    display:block; font-size:11px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--forest); margin-bottom:6px;
+  }
+  select,input[type=range]{width:100%}
+  select{
+    font-family:inherit; font-size:14px; padding:10px 12px; color:var(--ink);
+    background:var(--cream); border:1px solid var(--line); border-radius:10px;
+  }
+  input[type=range]{accent-color:var(--forest)}
+  .range-row{display:flex; align-items:center; gap:12px}
+  .range-val{font-size:13px; font-weight:600; color:var(--ink-soft); min-width:52px; text-align:right; font-variant-numeric:tabular-nums}
+  /* ---------- speaking stage ---------- */
+  .stage{
+    background:var(--card); border:1px solid var(--gold-soft);
+    border-radius:260px 260px 22px 22px;   /* arch top — her frame motif */
+    padding:74px 30px 40px; text-align:center; min-height:330px;
+    display:flex; flex-direction:column; justify-content:center; gap:18px;
+    box-shadow:0 1px 0 var(--gold-soft), 0 14px 40px -28px rgba(128,0,32,.35);
+  }
+  .stage-label{
+    text-transform:uppercase; letter-spacing:.2em; font-size:11px; font-weight:700; color:var(--gold);
+  }
+  .spoken{
+    font-family:'Playfair Display',Georgia,serif; font-weight:500; color:var(--ink);
+    font-size:clamp(21px,4.5vw,28px); line-height:1.45; text-wrap:balance; margin:0;
+  }
+  .spoken em{color:var(--burgundy); font-style:normal}
+  .stage-sub{font-size:13px; color:var(--ink-soft)}
+  .breath{
+    width:14px; height:14px; border-radius:50%; background:var(--sage); margin:0 auto; opacity:.85;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .breath.live{animation:breathe 6s ease-in-out infinite}
+    @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(2.1)}}
+  }
+  /* ---------- sway buttons ---------- */
+  .sway{display:none; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:4px}
+  .sway.show{display:flex}
+  .btn{
+    font-family:inherit; font-weight:700; font-size:14px; letter-spacing:.04em;
+    border-radius:999px; padding:13px 24px; cursor:pointer; border:2px solid transparent;
+  }
+  .btn-yes{background:var(--forest); color:var(--cream); border-color:var(--forest)}
+  .btn-yes:hover{background:var(--forest-deep)}
+  .btn-no{background:transparent; color:var(--burgundy); border-color:var(--burgundy)}
+  .btn-no:hover{background:#80002012}
+  .btn-quiet{background:transparent; color:var(--ink-soft); border-color:var(--line)}
+  /* ---------- choice + progress ---------- */
+  .choice{display:none; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:4px}
+  .choice.show{display:flex}
+  .progress{margin:18px 4px 0; display:none}
+  .progress.show{display:block}
+  .progress-track{height:5px; background:var(--line); border-radius:99px; overflow:hidden}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--forest)); border-radius:99px; transition:width .4s}
+  .progress-text{font-size:12px; color:var(--ink-soft); margin-top:7px; text-align:center; letter-spacing:.06em}
+  /* ---------- control bar ---------- */
+  .controls{
+    position:fixed; left:0; right:0; bottom:0; background:var(--forest-deep);
+    border-top:3px solid var(--gold); padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+  }
+  .controls-inner{max-width:680px; margin:0 auto; display:flex; gap:10px; align-items:center; justify-content:center}
+  .ctl{
+    font-family:inherit; font-weight:700; border:none; cursor:pointer; border-radius:999px;
+    background:#ffffff14; color:var(--cream); padding:12px 18px; font-size:14px;
+  }
+  .ctl:hover{background:#ffffff26}
+  .ctl-main{background:var(--gold); color:var(--ink); padding:14px 34px; font-size:15px; letter-spacing:.04em}
+  .ctl-main:hover{background:#d4b878}
+  .ctl[disabled]{opacity:.4; cursor:default}
+  /* ---------- full script ---------- */
+  details{margin-top:30px; border:1px solid var(--line); border-radius:14px; background:var(--card); padding:18px 22px}
+  summary{
+    cursor:pointer; font-weight:700; color:var(--forest); font-size:14px;
+    text-transform:uppercase; letter-spacing:.1em;
+  }
+  .belief-cat{
+    font-family:'Playfair Display',Georgia,serif; color:var(--burgundy); font-weight:700;
+    font-size:18px; margin:22px 0 8px;
+  }
+  .belief{border-bottom:1px solid var(--line); padding:10px 0; font-size:14px}
+  .belief:last-child{border-bottom:none}
+  .belief .t{color:var(--ink)}
+  .belief .r{color:var(--forest); margin-top:3px}
+  .belief .n{color:var(--gold); font-weight:700; margin-right:8px; font-variant-numeric:tabular-nums}
+  .note{font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:26px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="script-accent">rewired</span>
+    <h1>Subconscious Rewiring</h1>
+    <div class="tagline">Faith-rooted &middot; Read aloud for you &middot; At your pace</div>
+  </header>
+
+  <div class="phases" id="phases"></div>
+
+  <div class="panel" id="setup">
+    <h2>Set your session</h2>
+    <p>Pick a voice and pace, press <strong>Begin</strong>, and let it guide you — grounding first, then the 50 test statements (sway forward = yes, backward = no), the release, the rewires, and the sealing. Tap <em>Sways back</em> on any belief and the rewire phase can focus on just your blocks.</p>
+    <div class="field">
+      <label for="voice">Voice</label>
+      <select id="voice"></select>
+    </div>
+    <div class="field">
+      <label for="rate">Speaking pace</label>
+      <div class="range-row">
+        <input type="range" id="rate" min="0.6" max="1.15" step="0.05" value="0.85">
+        <span class="range-val" id="rateVal">0.85×</span>
+      </div>
+    </div>
+    <div class="field">
+      <label for="hold">Silence after each belief (sway &amp; repeat time)</label>
+      <div class="range-row">
+        <input type="range" id="hold" min="3" max="15" step="1" value="6">
+        <span class="range-val" id="holdVal">6 s</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage" id="stage" aria-live="polite">
+    <div class="stage-label" id="stageLabel">Ready when you are</div>
+    <p class="spoken" id="spoken">Find a quiet place. Feet on the floor. When you're ready, press Begin.</p>
+    <div class="breath" id="breath" hidden></div>
+    <div class="stage-sub" id="stageSub"></div>
+    <div class="sway" id="sway">
+      <button class="btn btn-yes" id="swayYes">Sways forward — yes</button>
+      <button class="btn btn-no" id="swayNo">Sways back — block</button>
+    </div>
+    <div class="choice" id="choice"></div>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
+
+  <details>
+    <summary>Read the 50 beliefs myself</summary>
+    <div id="beliefList"></div>
+  </details>
+  <p class="note">Your voice, pace, and last session's blocks stay on this device only. The full written script also lives in <em>PERSONAL &rsaquo; subconscious rewiring</em>.</p>
+</div>
+
+<div class="controls">
+  <div class="controls-inner">
+    <button class="ctl" id="btnBack" disabled>&#8249; Back</button>
+    <button class="ctl ctl-main" id="btnMain">Begin</button>
+    <button class="ctl" id="btnNext" disabled>Next &#8250;</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ---------------- data ---------------- */
+const CATS = [
+  ['Self-Worth & Identity', 0, 9],
+  ['Money & Receiving', 10, 19],
+  ['Selling & Impact', 20, 29],
+  ['Success & Failure', 30, 39],
+  ['Leadership & Team Building', 40, 49],
+];
+const BELIEFS = [
+  ["I believe I am worthy of success.","I am worthy of success, simply because I exist."],
+  ["I believe I am capable of building a thriving business.","I am fully capable and resourced to create a thriving business."],
+  ["I believe I have what it takes to be a leader.","I am designed to lead, and my unique leadership blesses others."],
+  ["I believe I am smart enough to succeed.","I am intelligent, resourceful, and quick to learn what I need."],
+  ["I believe people want to hear what I have to say.","My voice is valuable, and the right people are waiting for it."],
+  ["I believe I deserve to be seen.","It is safe and empowering for me to be fully seen."],
+  ["I believe I am confident sharing my story.","My story carries healing and inspiration for others."],
+  ["I believe I am comfortable being visible online.","Visibility is natural and joyful for me."],
+  ["I believe I am safe to be authentic in my business.","My authenticity is magnetic and builds trust with others."],
+  ["I believe I am enough just as I am to create success.","Who I am is more than enough to create lasting success."],
+  ["I believe I can make a lot of money and stay humble.","I can be wealthy, generous, and grounded all at once."],
+  ["I believe money flows easily to me.","I am open to and aligned with money flowing easily to me."],
+  ["I believe I can handle large amounts of money.","I am safe, wise, and capable of managing large amounts of money."],
+  ["I believe people want to pay me for my value.","People joyfully pay me because my work is worth it."],
+  ["I believe I can be wealthy and generous.","My wealth expands my ability to give and bless others."],
+  ["I believe it is safe for me to receive money.","It is safe and good for me to receive money abundantly."],
+  ["I believe I can create consistent income.","I am aligned with consistent, flowing income."],
+  ["I believe I can provide for my family with this business.","My business provides abundantly for my family's needs."],
+  ["I believe money is good and safe to have.","Money is a neutral tool, and I use it for good."],
+  ["I believe my financial success blesses others.","Every dollar I earn creates ripple effects of blessing."],
+  ["I believe I am good at selling without being pushy.","My selling is simply sharing, and it is loving and natural."],
+  ["I believe sales are simply sharing from the heart.","My sales flow from authenticity and service."],
+  ["I believe people love to buy from me.","People feel joy and trust when buying from me."],
+  ["I believe my offer changes lives.","My offer transforms lives and is deeply valuable."],
+  ["I believe people want what I am offering.","The right people are actively searching for what I offer."],
+  ["I believe I can sell with confidence and integrity.","I sell with confidence, integrity, and ease."],
+  ["I believe rejection is not personal.","A no is simply redirection toward the right yes."],
+  ["I believe I can handle objections with grace.","I respond to objections with empathy and wisdom."],
+  ["I believe I can be successful without manipulating anyone.","My success grows from truth, service, and authenticity."],
+  ["I believe my story inspires others to take action.","My story activates courage and transformation in others."],
+  ["I believe success is possible for me.","Success is inevitable for me as I stay aligned and consistent."],
+  ["I believe I am not afraid of success.","I welcome success with open arms and gratitude."],
+  ["I believe I can handle being more successful than others around me.","My success uplifts, inspires, and blesses others."],
+  ["I believe failure does not define me.","Failure is simply feedback guiding me toward greater success."],
+  ["I believe setbacks are stepping stones to success.","Every setback strengthens my foundation for success."],
+  ["I believe I learn quickly from my mistakes.","I grow wiser and stronger with every experience."],
+  ["I believe I can start over at any point.","I always have the power to start fresh with clarity and courage."],
+  ["I believe success can come easily and naturally.","Success flows to me with ease, joy, and alignment."],
+  ["I believe I can grow through discomfort.","Discomfort is growth, and I embrace it with strength."],
+  ["I believe I can enjoy the process, not just the outcome.","I find joy and fulfillment in every step of the journey."],
+  ["I believe I am a natural leader.","Leadership is natural for me, and I grow stronger every day."],
+  ["I believe I attract motivated people into my business.","I magnetize motivated, aligned people into my business."],
+  ["I believe I can guide others without controlling them.","I guide with wisdom, love, and trust in their own path."],
+  ["I believe I can lead a large team with confidence.","I am confident, capable, and supported as I lead my team."],
+  ["I believe I am respected as a leader.","I am respected and valued as a leader in my business."],
+  ["I believe I can hold space for others' growth.","I hold empowering and safe space for others to grow."],
+  ["I believe people trust me and my guidance.","I am trustworthy, and my guidance brings clarity."],
+  ["I believe I don't have to know everything to lead.","I lead through authenticity, humility, and continual learning."],
+  ["I believe I can inspire others by my example.","My actions and choices naturally inspire others."],
+  ["I believe my success lifts others with me.","As I rise, I lift others to rise alongside me."],
+];
+const OPENING = [
+  "Welcome. What we are moving through today, subconscious rewiring, is something practiced through connection with God, the Creator of all that is. Jesus made a way for the Holy Spirit to live in us, and that allows us to step into these gifts of healing and transformation.",
+  "This work is not limited to one belief system. Whether you call it God, Source, Universe, or simply a higher power, we all carry something greater within us. When we access that, subconscious beliefs can shift in powerful ways. This process will meet you right where you are.",
+  "We are going to uncover and release subconscious beliefs that may have been holding you back from the success, abundance, and joy you are meant to experience in your business."
+];
+const GROUNDING = [
+  "Go ahead and place your feet firmly on the ground. Close your eyes.",
+  "Take a deep breath in through your nose. And exhale fully out of your mouth.",
+  "Again. Breathe in deeply, filling your belly. And release, letting your shoulders drop.",
+  "Feel your feet connected to the floor. Imagine roots growing from your feet down into the earth. Grounding you. Holding you. Supporting you.",
+  "Above your head, imagine a beautiful light. The light of God, Creator, or Source. Flowing down through you, filling you with love and safety.",
+  "When you are ready, open yourself up with a simple prayer or intention in your heart. I am ready to see the truth. I am ready to release what no longer serves me. I am ready to step into my highest potential.",
+  "Take one more deep breath here."
+];
+const HOWTO = [
+  "In a moment I will read fifty belief statements, one at a time. Say each one silently or out loud, and then just notice how your body naturally sways.",
+  "If your body sways forward, that is your subconscious saying yes. This belief feels true for you. If you sway backward, that is your subconscious saying no. There is a block here, or the belief is not fully anchored.",
+  "Neither answer is right or wrong. This is simply information. It shows us where we are ready to shift."
+];
+const RELEASE = [
+  "You have now seen some of the beliefs that were hidden in your subconscious. Let's release what no longer serves you.",
+  "Close your eyes again. Imagine all of the no beliefs as heavy stones you have been carrying in a backpack. Feel the weight.",
+  "Now imagine yourself taking off that backpack, and setting it down in front of you.",
+  "Hand it over to God, the Creator, the Light. Watch as it dissolves into love. You don't need to hold it anymore.",
+  "Breathe in freedom. And exhale the old weight.",
+  "Say softly to yourself. I release every belief that is not mine, that does not serve me, and that is not aligned with my highest truth. I let it go now."
+];
+const REWIRE_INTRO = [
+  "Now let's install new, empowering beliefs to take their place. I will read them one at a time. Repeat after me, silently or out loud, and imagine the words flowing into your heart, into your cells, into your subconscious."
+];
+const SEALING = [
+  "To seal this in, place your hands on your heart. Take a deep breath, and say to yourself.",
+  "I accept these new truths. They are mine now. They are anchored in my mind, body, and spirit. I walk forward in alignment with my highest success.",
+  "Imagine golden light filling your entire body. Locking in these rewired beliefs. Protecting them. Keeping them strong.",
+  "Take one more deep, grounding breath. Wiggle your fingers and toes. And when you are ready, open your eyes.",
+  "Now, say this out loud. I am worthy. I am capable. I am abundant. I am a leader. Success flows through me and blesses others.",
+  "Welcome to your new reality. You are rewired for success."
+];
+const PHASES = ['Opening','Grounding','Testing','Release','Rewiring','Sealing'];
+
+/* ---------------- state ---------------- */
+const $ = id => document.getElementById(id);
+let queue = [], qi = 0, playing = false, holdTimer = null, chunkAbort = false;
+let noSet = new Set(), rewireScope = 'all', started = false;
+const prefs = (() => { try { return JSON.parse(localStorage.getItem('rewire-prefs')||'{}'); } catch(e){ return {}; } })();
+function savePrefs(){ try { localStorage.setItem('rewire-prefs', JSON.stringify({ voice:$('voice').value, rate:+$('rate').value, hold:+$('hold').value })); } catch(e){} }
+function saveNos(){ try { localStorage.setItem('rewire-nos', JSON.stringify([...noSet])); } catch(e){} }
+(() => { try { const n = JSON.parse(localStorage.getItem('rewire-nos')||'[]'); noSet = new Set(n); } catch(e){} })();
+
+/* ---------------- voices ---------------- */
+function loadVoices(){
+  const sel = $('voice'); const vs = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  if (!vs.length) return;
+  sel.innerHTML = '';
+  vs.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = v.name.replace(/Microsoft |Google /,'') + ' (' + v.lang + ')'; sel.appendChild(o); });
+  const preferred = prefs.voice && vs.find(v => v.name === prefs.voice) ? prefs.voice :
+    (vs.find(v => /natural|neural/i.test(v.name)) || vs.find(v => /female|zira|aria|jenny/i.test(v.name)) || vs[0]).name;
+  sel.value = preferred;
+}
+if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+else { $('spoken').textContent = 'This browser cannot speak text aloud. Open the written script below and read it at your own pace.'; }
+
+/* ---------------- speech engine ---------------- */
+function speakChunks(text, done){
+  const parts = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+  chunkAbort = false;
+  let i = 0;
+  const next = () => {
+    if (chunkAbort) return;
+    if (i >= parts.length){ done && done(); return; }
+    const u = new SpeechSynthesisUtterance(parts[i].trim());
+    const v = speechSynthesis.getVoices().find(x => x.name === $('voice').value);
+    if (v) u.voice = v;
+    u.rate = +$('rate').value; u.pitch = 1;
+    u.onend = () => { i++; setTimeout(next, 320); };
+    u.onerror = () => { i++; setTimeout(next, 120); };
+    speechSynthesis.speak(u);
+  };
+  next();
+}
+function stopSpeech(){ chunkAbort = true; clearTimeout(holdTimer); speechSynthesis.cancel(); }
+
+/* ---------------- queue build ---------------- */
+function seg(phase, text, opts){ return Object.assign({phase, text}, opts||{}); }
+function buildQueue(){
+  queue = [];
+  OPENING.forEach(t => queue.push(seg(0,t)));
+  GROUNDING.forEach(t => queue.push(seg(1,t,{breathe:true, hold:4})));
+  HOWTO.forEach(t => queue.push(seg(2,t)));
+  BELIEFS.forEach((b,i) => {
+    const cat = CATS.find(c => i >= c[1] && i <= c[2]);
+    if (cat && i === cat[1]) queue.push(seg(2, cat[0] + '.', {catHeader:true}));
+    queue.push(seg(2, b[0], {test:i}));
+  });
+  queue.push(seg(3, '', {releaseGate:true}));
+  RELEASE.forEach(t => queue.push(seg(3,t,{breathe:true, hold:3})));
+  queue.push(seg(4, '', {scopeGate:true}));
+  REWIRE_INTRO.forEach(t => queue.push(seg(4,t)));
+  BELIEFS.forEach((b,i) => queue.push(seg(4, b[1], {rewire:i})));
+  SEALING.forEach(t => queue.push(seg(5,t,{breathe:true, hold:3})));
+  queue.push(seg(5,'', {end:true}));
+}
+
+/* ---------------- UI ---------------- */
+function renderPhases(){
+  const el = $('phases'); el.innerHTML = '';
+  PHASES.forEach((p,i) => {
+    const b = document.createElement('button');
+    b.className = 'phase'; b.textContent = p;
+    b.onclick = () => { if (!started) startSession(); jumpToPhase(i); };
+    el.appendChild(b);
+  });
+}
+function markPhase(i){
+  [...$('phases').children].forEach((c,k) => {
+    c.classList.toggle('active', k === i); c.classList.toggle('done', k < i);
+  });
+}
+function renderBeliefList(){
+  const el = $('beliefList'); let html = '';
+  CATS.forEach(c => {
+    html += '<div class="belief-cat">' + c[0] + '</div>';
+    for (let i = c[1]; i <= c[2]; i++){
+      html += '<div class="belief"><div class="t"><span class="n">' + (i+1) + '</span>Test: ' + BELIEFS[i][0] + '</div><div class="r">Rewire: ' + BELIEFS[i][1] + '</div></div>';
+    }
+  });
+  el.innerHTML = html;
+}
+function setStage(label, text, sub){
+  $('stageLabel').textContent = label; $('spoken').textContent = text; $('stageSub').textContent = sub || '';
+}
+function updateProgress(){
+  const cur = queue[qi];
+  if (cur && cur.test !== undefined){
+    $('progress').classList.add('show');
+    $('progressFill').style.width = ((cur.test+1)/50*100) + '%';
+    const cat = CATS.find(c => cur.test >= c[1] && cur.test <= c[2]);
+    $('progressText').textContent = 'Belief ' + (cur.test+1) + ' of 50 · ' + cat[0] + (noSet.size ? ' · ' + noSet.size + ' to rewire' : '');
+  } else if (cur && cur.rewire !== undefined){
+    $('progress').classList.add('show');
+    const list = rewireScope === 'no' ? [...noSet] : BELIEFS.map((_,i)=>i);
+    const pos = list.indexOf(cur.rewire) + 1;
+    $('progressFill').style.width = (pos/list.length*100) + '%';
+    $('progressText').textContent = 'Rewire ' + pos + ' of ' + list.length;
+  } else { $('progress').classList.remove('show'); }
+}
+
+/* ---------------- playback ---------------- */
+function playCurrent(){
+  clearTimeout(holdTimer); $('sway').classList.remove('show'); $('choice').classList.remove('show');
+  $('breath').hidden = true; $('breath').classList.remove('live');
+  if (qi < 0) qi = 0;
+  if (qi >= queue.length) qi = queue.length - 1;
+  const s = queue[qi];
+  markPhase(s.phase); updateProgress();
+  $('btnBack').disabled = qi === 0; $('btnNext').disabled = false;
+
+  // gates
+  if (s.releaseGate){
+    stopSpeech();
+    setStage('Testing complete', noSet.size
+      ? 'Your body said "not yet" to ' + noSet.size + ' belief' + (noSet.size>1?'s':'') + '. Let’s release them.'
+      : 'Every belief tested strong. We’ll still release and reinforce.', 'Press Next when you’re ready.');
+    playing = false; $('btnMain').textContent = 'Resume';
+    return;
+  }
+  if (s.scopeGate){
+    stopSpeech();
+    setStage('Choose your rewire', 'Rewire all fifty beliefs, or focus on the ones that swayed back?', '');
+    const c = $('choice'); c.innerHTML = '';
+    const all = document.createElement('button'); all.className = 'btn btn-yes'; all.textContent = 'All 50 beliefs';
+    all.onclick = () => { rewireScope = 'all'; qi++; playing = true; $('btnMain').textContent='Pause'; playCurrent(); };
+    c.appendChild(all);
+    if (noSet.size){
+      const mine = document.createElement('button'); mine.className = 'btn btn-no'; mine.textContent = 'Just my ' + noSet.size + ' block' + (noSet.size>1?'s':'');
+      mine.onclick = () => { rewireScope = 'no'; qi++; playing = true; $('btnMain').textContent='Pause'; playCurrent(); };
+      c.appendChild(mine);
+    }
+    c.classList.add('show'); playing = false; $('btnMain').textContent = 'Resume';
+    return;
+  }
+  if (s.end){
+    stopSpeech();
+    setStage('Sealed', 'Welcome to your new reality. You are rewired for success.', 'Come back to this any time.');
+    playing = false; $('btnMain').textContent = 'Start again'; started = false; saveNos();
+    return;
+  }
+  // skip rewires outside scope
+  if (s.rewire !== undefined && rewireScope === 'no' && !noSet.has(s.rewire)){ qi++; playCurrent(); return; }
+
+  // normal spoken segment
+  const label = s.catHeader ? 'Next category' :
+    s.test !== undefined ? 'Feel your sway' :
+    s.rewire !== undefined ? 'Repeat after me' : PHASES[s.phase];
+  setStage(label, s.text, s.test !== undefined ? 'Notice: forward is yes, backward is a block.' : (s.rewire !== undefined ? 'Say it out loud, let it land.' : ''));
+  if (s.breathe){ $('breath').hidden = false; $('breath').classList.add('live'); }
+  if (!playing) return;
+  speakChunks(s.text, () => {
+    if (!playing) return;
+    if (s.test !== undefined){
+      $('sway').classList.add('show');
+      holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
+    } else if (s.rewire !== undefined){
+      holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
+    } else {
+      holdTimer = setTimeout(advance, (s.hold ? s.hold : 1.2) * 1000);
+    }
+  });
+}
+function advance(){ if (qi < queue.length - 1){ qi++; playCurrent(); } }
+function jumpToPhase(i){
+  stopSpeech();
+  qi = queue.findIndex(s => s.phase === i);
+  if (qi < 0) qi = 0;
+  playing = true; $('btnMain').textContent = 'Pause';
+  playCurrent();
+}
+function startSession(){
+  buildQueue(); started = true; qi = 0; playing = true;
+  if (rewireScope === undefined) rewireScope = 'all';
+  $('setup').style.display = 'none';
+  $('btnMain').textContent = 'Pause';
+  savePrefs();
+  playCurrent();
+}
+
+/* ---------------- events ---------------- */
+$('btnMain').onclick = () => {
+  if (!started){ noSet = new Set(); saveNos(); startSession(); return; }
+  if (playing){ playing = false; stopSpeech(); $('btnMain').textContent = 'Resume'; }
+  else { playing = true; $('btnMain').textContent = 'Pause'; playCurrent(); }
+};
+$('btnNext').onclick = () => { stopSpeech(); advance(); };
+$('btnBack').onclick = () => { stopSpeech(); if (qi > 0){ qi--; } playCurrent(); };
+$('swayYes').onclick = () => { const s = queue[qi]; if (s.test !== undefined){ noSet.delete(s.test); saveNos(); } clearTimeout(holdTimer); advance(); };
+$('swayNo').onclick = () => { const s = queue[qi]; if (s.test !== undefined){ noSet.add(s.test); saveNos(); } clearTimeout(holdTimer); advance(); };
+$('rate').oninput = () => { $('rateVal').textContent = (+$('rate').value).toFixed(2) + '×'; savePrefs(); };
+$('hold').oninput = () => { $('holdVal').textContent = $('hold').value + ' s'; savePrefs(); };
+$('voice').onchange = savePrefs;
+if (prefs.rate){ $('rate').value = prefs.rate; $('rateVal').textContent = (+prefs.rate).toFixed(2) + '×'; }
+if (prefs.hold){ $('hold').value = prefs.hold; $('holdVal').textContent = prefs.hold + ' s'; }
+window.addEventListener('beforeunload', stopSpeech);
+document.addEventListener('visibilitychange', () => { if (document.hidden){ playing = false; stopSpeech(); $('btnMain').textContent = 'Resume'; } });
+
+renderPhases(); renderBeliefList();
+</script>
+
+</body>
+</html>
