@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A guided, read-aloud subconscious rewiring session - grounding, 50 belief tests, release, rewires, and sealing.">
+<meta name="description" content="A guided, read-aloud subconscious rewiring session - grounding, 50 belief tests in sets of ten, release, rewires, and sealing.">
 <title>Rewired for Success</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Pinyon+Script&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -92,9 +92,15 @@
     .breath.live{animation:breathe 6s ease-in-out infinite}
     @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(2.1)}}
   }
-  /* ---------- sway buttons ---------- */
-  .sway{display:none; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:4px}
-  .sway.show{display:flex}
+  /* ---------- recap ---------- */
+  #recap{margin-top:22px}
+  .recap-row{display:flex; gap:12px; align-items:center; padding:10px 2px; border-bottom:1px solid var(--line); cursor:pointer; user-select:none}
+  .recap-row:last-child{border-bottom:none}
+  .recap-row .num{color:var(--gold); font-weight:700; font-variant-numeric:tabular-nums; min-width:24px; text-align:right}
+  .recap-row .txt{flex:1; font-size:14.5px; color:var(--ink)}
+  .recap-state{font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:6px 12px; white-space:nowrap; border:2px solid transparent}
+  .recap-state.yes{background:#36604914; color:var(--forest); border-color:var(--sage)}
+  .recap-state.no{background:#80002012; color:var(--burgundy); border-color:var(--burgundy)}
   .btn{
     font-family:inherit; font-weight:700; font-size:14px; letter-spacing:.04em;
     border-radius:999px; padding:13px 24px; cursor:pointer; border:2px solid transparent;
@@ -157,7 +163,7 @@
 
   <div class="panel" id="setup">
     <h2>Set your session</h2>
-    <p>Pick a voice and pace, press <strong>Begin</strong>, and let it guide you — grounding first, then the 50 test statements (sway forward = yes, backward = no), the release, the rewires, and the sealing. Tap <em>Sways back</em> on any belief and the rewire phase can focus on just your blocks.</p>
+    <p>Pick a voice and pace, press <strong>Begin</strong>, and let it guide you — grounding first, then the 50 test statements read <strong>ten at a time, hands-free</strong> so you stay in the state. After each set of ten you'll open your eyes, mark which beliefs swayed you back, and be grounded again before the next ten. Then the release, the rewires (all 50, or just your blocks), and the sealing.</p>
     <div class="field">
       <label for="voice">Voice</label>
       <select id="voice"></select>
@@ -183,11 +189,14 @@
     <p class="spoken" id="spoken">Find a quiet place. Feet on the floor. When you're ready, press Begin.</p>
     <div class="breath" id="breath" hidden></div>
     <div class="stage-sub" id="stageSub"></div>
-    <div class="sway" id="sway">
-      <button class="btn btn-yes" id="swayYes">Sways forward — yes</button>
-      <button class="btn btn-no" id="swayNo">Sways back — block</button>
-    </div>
     <div class="choice" id="choice"></div>
+  </div>
+
+  <div class="panel" id="recap" hidden>
+    <h2 id="recapTitle">Mark your sways</h2>
+    <p>Tap any belief that swayed you <strong>backward</strong> — those are your blocks. Leave the forward ones as they are. No memory test — just what you noticed.</p>
+    <div id="recapList"></div>
+    <div style="text-align:center; margin-top:18px"><button class="btn btn-yes" id="recapDone">Continue — ground for the next set</button></div>
   </div>
 
   <div class="progress" id="progress">
@@ -287,9 +296,14 @@ const GROUNDING = [
   "Take one more deep breath here."
 ];
 const HOWTO = [
-  "In a moment I will read fifty belief statements, one at a time. Say each one silently or out loud, and then just notice how your body naturally sways.",
+  "In a moment I will read fifty belief statements, ten at a time. Say each one silently or out loud, and then just notice how your body naturally sways. Stay in the stillness. You don't need to touch anything while the statements are being read.",
   "If your body sways forward, that is your subconscious saying yes. This belief feels true for you. If you sway backward, that is your subconscious saying no. There is a block here, or the belief is not fully anchored.",
-  "Neither answer is right or wrong. This is simply information. It shows us where we are ready to shift."
+  "Neither answer is right or wrong. This is simply information. After each set of ten, I will pause so you can open your eyes and mark which ones swayed you back. Then we will ground again before the next ten."
+];
+const REGROUND = [
+  "Let those settle. Close your eyes again.",
+  "Take a deep breath in through your nose... and let it all the way out. Feel your feet on the floor. The roots holding you. The light above you, filling you with love and safety.",
+  "When you're ready, here are the next ten."
 ];
 const RELEASE = [
   "You have now seen some of the beliefs that were hidden in your subconscious. Let's release what no longer serves you.",
@@ -361,10 +375,11 @@ function buildQueue(){
   OPENING.forEach(t => queue.push(seg(0,t)));
   GROUNDING.forEach(t => queue.push(seg(1,t,{breathe:true, hold:4})));
   HOWTO.forEach(t => queue.push(seg(2,t)));
-  BELIEFS.forEach((b,i) => {
-    const cat = CATS.find(c => i >= c[1] && i <= c[2]);
-    if (cat && i === cat[1]) queue.push(seg(2, cat[0] + '.', {catHeader:true}));
-    queue.push(seg(2, b[0], {test:i}));
+  CATS.forEach((cat, ci) => {
+    queue.push(seg(2, cat[0] + '.', {catHeader:true}));
+    for (let i = cat[1]; i <= cat[2]; i++) queue.push(seg(2, BELIEFS[i][0], {test:i}));
+    queue.push(seg(2, '', {recapCat: ci}));
+    if (ci < CATS.length - 1) REGROUND.forEach(t => queue.push(seg(2, t, {breathe:true, hold:3})));
   });
   queue.push(seg(3, '', {releaseGate:true}));
   RELEASE.forEach(t => queue.push(seg(3,t,{breathe:true, hold:3})));
@@ -421,7 +436,7 @@ function updateProgress(){
 
 /* ---------------- playback ---------------- */
 function playCurrent(){
-  clearTimeout(holdTimer); $('sway').classList.remove('show'); $('choice').classList.remove('show');
+  clearTimeout(holdTimer); $('recap').hidden = true; $('choice').classList.remove('show');
   $('breath').hidden = true; $('breath').classList.remove('live');
   if (qi < 0) qi = 0;
   if (qi >= queue.length) qi = queue.length - 1;
@@ -430,6 +445,15 @@ function playCurrent(){
   $('btnBack').disabled = qi === 0; $('btnNext').disabled = false;
 
   // gates
+  if (s.recapCat !== undefined){
+    stopSpeech();
+    const cat = CATS[s.recapCat];
+    setStage('Set complete', cat[0] + ' — done. Open your eyes gently.', 'Mark your sways below, then continue.');
+    renderRecap(s.recapCat);
+    $('recap').hidden = false;
+    playing = false; $('btnMain').textContent = 'Resume';
+    return;
+  }
   if (s.releaseGate){
     stopSpeech();
     setStage('Testing complete', noSet.size
@@ -466,13 +490,12 @@ function playCurrent(){
   const label = s.catHeader ? 'Next category' :
     s.test !== undefined ? 'Feel your sway' :
     s.rewire !== undefined ? 'Repeat after me' : PHASES[s.phase];
-  setStage(label, s.text, s.test !== undefined ? 'Notice: forward is yes, backward is a block.' : (s.rewire !== undefined ? 'Say it out loud, let it land.' : ''));
+  setStage(label, s.text, s.test !== undefined ? 'Just notice the sway. You’ll mark it at the end of this set.' : (s.rewire !== undefined ? 'Say it out loud, let it land.' : ''));
   if (s.breathe){ $('breath').hidden = false; $('breath').classList.add('live'); }
   if (!playing) return;
   speakChunks(s.text, () => {
     if (!playing) return;
     if (s.test !== undefined){
-      $('sway').classList.add('show');
       holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
     } else if (s.rewire !== undefined){
       holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
@@ -506,8 +529,21 @@ $('btnMain').onclick = () => {
 };
 $('btnNext').onclick = () => { stopSpeech(); advance(); };
 $('btnBack').onclick = () => { stopSpeech(); if (qi > 0){ qi--; } playCurrent(); };
-$('swayYes').onclick = () => { const s = queue[qi]; if (s.test !== undefined){ noSet.delete(s.test); saveNos(); } clearTimeout(holdTimer); advance(); };
-$('swayNo').onclick = () => { const s = queue[qi]; if (s.test !== undefined){ noSet.add(s.test); saveNos(); } clearTimeout(holdTimer); advance(); };
+function renderRecap(ci){
+  const cat = CATS[ci]; const el = $('recapList'); el.innerHTML = '';
+  $('recapTitle').textContent = cat[0] + ' — mark your sways';
+  for (let i = cat[1]; i <= cat[2]; i++){
+    const row = document.createElement('div'); row.className = 'recap-row';
+    const setState = () => {
+      const isNo = noSet.has(i);
+      row.innerHTML = '<span class="num">' + (i+1) + '</span><span class="txt">' + BELIEFS[i][0] + '</span><span class="recap-state ' + (isNo ? 'no' : 'yes') + '">' + (isNo ? 'Swayed back' : 'Forward') + '</span>';
+    };
+    setState();
+    row.onclick = () => { if (noSet.has(i)) noSet.delete(i); else noSet.add(i); saveNos(); setState(); };
+    el.appendChild(row);
+  }
+}
+$('recapDone').onclick = () => { $('recap').hidden = true; qi++; playing = true; $('btnMain').textContent = 'Pause'; playCurrent(); };
 $('rate').oninput = () => { $('rateVal').textContent = (+$('rate').value).toFixed(2) + '×'; savePrefs(); };
 $('hold').oninput = () => { $('holdVal').textContent = $('hold').value + ' s'; savePrefs(); };
 $('voice').onchange = savePrefs;
