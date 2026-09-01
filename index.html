@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A guided, read-aloud subconscious rewiring session - grounding, 50 belief tests in sets of ten, release, rewires, and sealing.">
+<meta name="description" content="A guided, read-aloud subconscious rewiring session in English, French, and Spanish.">
 <title>Rewired for Success</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Pinyon+Script&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -71,7 +71,7 @@
   /* ---------- speaking stage ---------- */
   .stage{
     background:var(--card); border:1px solid var(--gold-soft);
-    border-radius:260px 260px 22px 22px;   /* arch top — her frame motif */
+    border-radius:260px 260px 22px 22px;
     padding:74px 30px 40px; text-align:center; min-height:330px;
     display:flex; flex-direction:column; justify-content:center; gap:18px;
     box-shadow:0 1px 0 var(--gold-soft), 0 14px 40px -28px rgba(128,0,32,.35);
@@ -83,7 +83,6 @@
     font-family:'Playfair Display',Georgia,serif; font-weight:500; color:var(--ink);
     font-size:clamp(21px,4.5vw,28px); line-height:1.45; text-wrap:balance; margin:0;
   }
-  .spoken em{color:var(--burgundy); font-style:normal}
   .stage-sub{font-size:13px; color:var(--ink-soft)}
   .breath{
     width:14px; height:14px; border-radius:50%; background:var(--sage); margin:0 auto; opacity:.85;
@@ -101,6 +100,7 @@
   .recap-state{font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:6px 12px; white-space:nowrap; border:2px solid transparent}
   .recap-state.yes{background:#36604914; color:var(--forest); border-color:var(--sage)}
   .recap-state.no{background:#80002012; color:var(--burgundy); border-color:var(--burgundy)}
+  /* ---------- buttons / choice / progress ---------- */
   .btn{
     font-family:inherit; font-weight:700; font-size:14px; letter-spacing:.04em;
     border-radius:999px; padding:13px 24px; cursor:pointer; border:2px solid transparent;
@@ -110,7 +110,6 @@
   .btn-no{background:transparent; color:var(--burgundy); border-color:var(--burgundy)}
   .btn-no:hover{background:#80002012}
   .btn-quiet{background:transparent; color:var(--ink-soft); border-color:var(--line)}
-  /* ---------- choice + progress ---------- */
   .choice{display:none; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:4px}
   .choice.show{display:flex}
   .progress{margin:18px 4px 0; display:none}
@@ -148,6 +147,7 @@
   .belief .r{color:var(--forest); margin-top:3px}
   .belief .n{color:var(--gold); font-weight:700; margin-right:8px; font-variant-numeric:tabular-nums}
   .note{font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:26px}
+  .hint{font-size:12.5px; color:var(--ink-soft)}
 </style>
 </head>
 <body>
@@ -156,31 +156,39 @@
   <header>
     <span class="script-accent">rewired</span>
     <h1>Subconscious Rewiring</h1>
-    <div class="tagline">Faith-rooted &middot; Read aloud for you &middot; At your pace</div>
+    <div class="tagline" id="tagline"></div>
   </header>
 
   <div class="phases" id="phases"></div>
 
   <div class="panel" id="setup">
-    <h2>Set your session</h2>
-    <p>Pick a voice and pace, press <strong>Begin</strong>, and let it guide you — grounding first, then the 50 test statements read <strong>ten at a time, hands-free</strong> so you stay in the state. After each set of ten you'll open your eyes, mark which beliefs swayed you back, and be grounded again before the next ten. Then the release, the rewires (all 50, or just your blocks), and the sealing.</p>
+    <h2 id="setupTitle"></h2>
+    <p id="setupDesc"></p>
     <div class="field">
-      <label for="voice">Voice</label>
+      <label for="langSel" id="lblLang"></label>
+      <select id="langSel">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="voice" id="lblVoice"></label>
       <select id="voice"></select>
       <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-        <button class="btn btn-quiet" id="testVoice" type="button">Test the voice</button>
-        <span style="font-size:12.5px; color:var(--ink-soft)">No sound? Check your volume, tap Test again, and make sure you opened this page in your own browser — audio can be blocked inside previews.</span>
+        <button class="btn btn-quiet" id="testVoice" type="button"></button>
+        <span class="hint" id="soundHint"></span>
       </div>
     </div>
     <div class="field">
-      <label for="rate">Speaking pace</label>
+      <label for="rate" id="lblRate"></label>
       <div class="range-row">
         <input type="range" id="rate" min="0.6" max="1.15" step="0.05" value="0.85">
         <span class="range-val" id="rateVal">0.85×</span>
       </div>
     </div>
     <div class="field">
-      <label for="hold">Silence after each belief (sway &amp; repeat time)</label>
+      <label for="hold" id="lblHold"></label>
       <div class="range-row">
         <input type="range" id="hold" min="3" max="15" step="1" value="6">
         <span class="range-val" id="holdVal">6 s</span>
@@ -189,18 +197,18 @@
   </div>
 
   <div class="stage" id="stage" aria-live="polite">
-    <div class="stage-label" id="stageLabel">Ready when you are</div>
-    <p class="spoken" id="spoken">Find a quiet place. Feet on the floor. When you're ready, press Begin.</p>
+    <div class="stage-label" id="stageLabel"></div>
+    <p class="spoken" id="spoken"></p>
     <div class="breath" id="breath" hidden></div>
     <div class="stage-sub" id="stageSub"></div>
     <div class="choice" id="choice"></div>
   </div>
 
   <div class="panel" id="recap" hidden>
-    <h2 id="recapTitle">Mark your sways</h2>
-    <p>Tap any belief that swayed you <strong>backward</strong> — those are your blocks. Leave the forward ones as they are. No memory test — just what you noticed.</p>
+    <h2 id="recapTitle"></h2>
+    <p id="recapHint"></p>
     <div id="recapList"></div>
-    <div style="text-align:center; margin-top:18px"><button class="btn btn-yes" id="recapDone">Continue — ground for the next set</button></div>
+    <div style="text-align:center; margin-top:18px"><button class="btn btn-yes" id="recapDone"></button></div>
   </div>
 
   <div class="progress" id="progress">
@@ -209,173 +217,462 @@
   </div>
 
   <details>
-    <summary>Read the 50 beliefs myself</summary>
+    <summary id="sumBeliefs"></summary>
     <div id="beliefList"></div>
   </details>
-  <p class="note">Your voice, pace, and last session's blocks stay on this device only. The full written script also lives in <em>PERSONAL &rsaquo; subconscious rewiring</em>.</p>
+  <p class="note" id="pageNote"></p>
 </div>
 
 <div class="controls">
   <div class="controls-inner">
-    <button class="ctl" id="btnBack" disabled>&#8249; Back</button>
-    <button class="ctl ctl-main" id="btnMain">Begin</button>
-    <button class="ctl" id="btnNext" disabled>Next &#8250;</button>
+    <button class="ctl" id="btnBack" disabled>&#8249;</button>
+    <button class="ctl ctl-main" id="btnMain"></button>
+    <button class="ctl" id="btnNext" disabled>&#8250;</button>
   </div>
 </div>
 
 <script>
 'use strict';
-/* ---------------- data ---------------- */
-const CATS = [
-  ['Self-Worth & Identity', 0, 9],
-  ['Money & Receiving', 10, 19],
-  ['Selling & Impact', 20, 29],
-  ['Success & Failure', 30, 39],
-  ['Leadership & Team Building', 40, 49],
-];
-const BELIEFS = [
-  ["I believe I am worthy of success.","I am worthy of success, simply because I exist."],
-  ["I believe I am capable of building a thriving business.","I am fully capable and resourced to create a thriving business."],
-  ["I believe I have what it takes to be a leader.","I am designed to lead, and my unique leadership blesses others."],
-  ["I believe I am smart enough to succeed.","I am intelligent, resourceful, and quick to learn what I need."],
-  ["I believe people want to hear what I have to say.","My voice is valuable, and the right people are waiting for it."],
-  ["I believe I deserve to be seen.","It is safe and empowering for me to be fully seen."],
-  ["I believe I am confident sharing my story.","My story carries healing and inspiration for others."],
-  ["I believe I am comfortable being visible online.","Visibility is natural and joyful for me."],
-  ["I believe I am safe to be authentic in my business.","My authenticity is magnetic and builds trust with others."],
-  ["I believe I am enough just as I am to create success.","Who I am is more than enough to create lasting success."],
-  ["I believe I can make a lot of money and stay humble.","I can be wealthy, generous, and grounded all at once."],
-  ["I believe money flows easily to me.","I am open to and aligned with money flowing easily to me."],
-  ["I believe I can handle large amounts of money.","I am safe, wise, and capable of managing large amounts of money."],
-  ["I believe people want to pay me for my value.","People joyfully pay me because my work is worth it."],
-  ["I believe I can be wealthy and generous.","My wealth expands my ability to give and bless others."],
-  ["I believe it is safe for me to receive money.","It is safe and good for me to receive money abundantly."],
-  ["I believe I can create consistent income.","I am aligned with consistent, flowing income."],
-  ["I believe I can provide for my family with this business.","My business provides abundantly for my family's needs."],
-  ["I believe money is good and safe to have.","Money is a neutral tool, and I use it for good."],
-  ["I believe my financial success blesses others.","Every dollar I earn creates ripple effects of blessing."],
-  ["I believe I am good at selling without being pushy.","My selling is simply sharing, and it is loving and natural."],
-  ["I believe sales are simply sharing from the heart.","My sales flow from authenticity and service."],
-  ["I believe people love to buy from me.","People feel joy and trust when buying from me."],
-  ["I believe my offer changes lives.","My offer transforms lives and is deeply valuable."],
-  ["I believe people want what I am offering.","The right people are actively searching for what I offer."],
-  ["I believe I can sell with confidence and integrity.","I sell with confidence, integrity, and ease."],
-  ["I believe rejection is not personal.","A no is simply redirection toward the right yes."],
-  ["I believe I can handle objections with grace.","I respond to objections with empathy and wisdom."],
-  ["I believe I can be successful without manipulating anyone.","My success grows from truth, service, and authenticity."],
-  ["I believe my story inspires others to take action.","My story activates courage and transformation in others."],
-  ["I believe success is possible for me.","Success is inevitable for me as I stay aligned and consistent."],
-  ["I believe I am not afraid of success.","I welcome success with open arms and gratitude."],
-  ["I believe I can handle being more successful than others around me.","My success uplifts, inspires, and blesses others."],
-  ["I believe failure does not define me.","Failure is simply feedback guiding me toward greater success."],
-  ["I believe setbacks are stepping stones to success.","Every setback strengthens my foundation for success."],
-  ["I believe I learn quickly from my mistakes.","I grow wiser and stronger with every experience."],
-  ["I believe I can start over at any point.","I always have the power to start fresh with clarity and courage."],
-  ["I believe success can come easily and naturally.","Success flows to me with ease, joy, and alignment."],
-  ["I believe I can grow through discomfort.","Discomfort is growth, and I embrace it with strength."],
-  ["I believe I can enjoy the process, not just the outcome.","I find joy and fulfillment in every step of the journey."],
-  ["I believe I am a natural leader.","Leadership is natural for me, and I grow stronger every day."],
-  ["I believe I attract motivated people into my business.","I magnetize motivated, aligned people into my business."],
-  ["I believe I can guide others without controlling them.","I guide with wisdom, love, and trust in their own path."],
-  ["I believe I can lead a large team with confidence.","I am confident, capable, and supported as I lead my team."],
-  ["I believe I am respected as a leader.","I am respected and valued as a leader in my business."],
-  ["I believe I can hold space for others' growth.","I hold empowering and safe space for others to grow."],
-  ["I believe people trust me and my guidance.","I am trustworthy, and my guidance brings clarity."],
-  ["I believe I don't have to know everything to lead.","I lead through authenticity, humility, and continual learning."],
-  ["I believe I can inspire others by my example.","My actions and choices naturally inspire others."],
-  ["I believe my success lifts others with me.","As I rise, I lift others to rise alongside me."],
-];
-const OPENING = [
-  "Welcome. What we are moving through today, subconscious rewiring, is something practiced through connection with God, the Creator of all that is. Jesus made a way for the Holy Spirit to live in us, and that allows us to step into these gifts of healing and transformation.",
-  "This work is not limited to one belief system. Whether you call it God, Source, Universe, or simply a higher power, we all carry something greater within us. When we access that, subconscious beliefs can shift in powerful ways. This process will meet you right where you are.",
-  "We are going to uncover and release subconscious beliefs that may have been holding you back from the success, abundance, and joy you are meant to experience in your business."
-];
-const GROUNDING = [
-  "Go ahead and place your feet firmly on the ground. Close your eyes.",
-  "Take a deep breath in through your nose. And exhale fully out of your mouth.",
-  "Again. Breathe in deeply, filling your belly. And release, letting your shoulders drop.",
-  "Feel your feet connected to the floor. Imagine roots growing from your feet down into the earth. Grounding you. Holding you. Supporting you.",
-  "Above your head, imagine a beautiful light. The light of God, Creator, or Source. Flowing down through you, filling you with love and safety.",
-  "When you are ready, open yourself up with a simple prayer or intention in your heart. I am ready to see the truth. I am ready to release what no longer serves me. I am ready to step into my highest potential.",
-  "Take one more deep breath here."
-];
-const HOWTO = [
-  "In a moment I will read fifty belief statements, ten at a time. Say each one silently or out loud, and then just notice how your body naturally sways. Stay in the stillness. You don't need to touch anything while the statements are being read.",
-  "If your body sways forward, that is your subconscious saying yes. This belief feels true for you. If you sway backward, that is your subconscious saying no. There is a block here, or the belief is not fully anchored.",
-  "Neither answer is right or wrong. This is simply information. After each set of ten, I will pause so you can open your eyes and mark which ones swayed you back. Then we will ground again before the next ten."
-];
-const REGROUND = [
-  "Let those settle. Close your eyes again.",
-  "Take a deep breath in through your nose... and let it all the way out. Feel your feet on the floor. The roots holding you. The light above you, filling you with love and safety.",
-  "When you're ready, here are the next ten."
-];
-const RELEASE = [
-  "You have now seen some of the beliefs that were hidden in your subconscious. Let's release what no longer serves you.",
-  "Close your eyes again. Imagine all of the no beliefs as heavy stones you have been carrying in a backpack. Feel the weight.",
-  "Now imagine yourself taking off that backpack, and setting it down in front of you.",
-  "Hand it over to God, the Creator, the Light. Watch as it dissolves into love. You don't need to hold it anymore.",
-  "Breathe in freedom. And exhale the old weight.",
-  "Say softly to yourself. I release every belief that is not mine, that does not serve me, and that is not aligned with my highest truth. I let it go now."
-];
-const REWIRE_INTRO = [
-  "Now let's install new, empowering beliefs to take their place. I will read them one at a time. Repeat after me, silently or out loud, and imagine the words flowing into your heart, into your cells, into your subconscious."
-];
-const SEALING = [
-  "To seal this in, place your hands on your heart. Take a deep breath, and say to yourself.",
-  "I accept these new truths. They are mine now. They are anchored in my mind, body, and spirit. I walk forward in alignment with my highest success.",
-  "Imagine golden light filling your entire body. Locking in these rewired beliefs. Protecting them. Keeping them strong.",
-  "Take one more deep, grounding breath. Wiggle your fingers and toes. And when you are ready, open your eyes.",
-  "Now, say this out loud. I am worthy. I am capable. I am abundant. I am a leader. Success flows through me and blesses others.",
-  "Welcome to your new reality. You are rewired for success."
-];
-const PHASES = ['Opening','Grounding','Testing','Release','Rewiring','Sealing'];
+/* ================= bilingual content ================= */
+const LANGS = {
+en: {
+  CATS: [['Self-Worth & Identity',0,9],['Money & Receiving',10,19],['Selling & Impact',20,29],['Success & Failure',30,39],['Leadership & Team Building',40,49]],
+  BELIEFS: [
+    ["I believe I am worthy of success.","I am worthy of success, simply because I exist."],
+    ["I believe I am capable of building a thriving business.","I am fully capable and resourced to create a thriving business."],
+    ["I believe I have what it takes to be a leader.","I am designed to lead, and my unique leadership blesses others."],
+    ["I believe I am smart enough to succeed.","I am intelligent, resourceful, and quick to learn what I need."],
+    ["I believe people want to hear what I have to say.","My voice is valuable, and the right people are waiting for it."],
+    ["I believe I deserve to be seen.","It is safe and empowering for me to be fully seen."],
+    ["I believe I am confident sharing my story.","My story carries healing and inspiration for others."],
+    ["I believe I am comfortable being visible online.","Visibility is natural and joyful for me."],
+    ["I believe I am safe to be authentic in my business.","My authenticity is magnetic and builds trust with others."],
+    ["I believe I am enough just as I am to create success.","Who I am is more than enough to create lasting success."],
+    ["I believe I can make a lot of money and stay humble.","I can be wealthy, generous, and grounded all at once."],
+    ["I believe money flows easily to me.","I am open to and aligned with money flowing easily to me."],
+    ["I believe I can handle large amounts of money.","I am safe, wise, and capable of managing large amounts of money."],
+    ["I believe people want to pay me for my value.","People joyfully pay me because my work is worth it."],
+    ["I believe I can be wealthy and generous.","My wealth expands my ability to give and bless others."],
+    ["I believe it is safe for me to receive money.","It is safe and good for me to receive money abundantly."],
+    ["I believe I can create consistent income.","I am aligned with consistent, flowing income."],
+    ["I believe I can provide for my family with this business.","My business provides abundantly for my family's needs."],
+    ["I believe money is good and safe to have.","Money is a neutral tool, and I use it for good."],
+    ["I believe my financial success blesses others.","Every dollar I earn creates ripple effects of blessing."],
+    ["I believe I am good at selling without being pushy.","My selling is simply sharing, and it is loving and natural."],
+    ["I believe sales are simply sharing from the heart.","My sales flow from authenticity and service."],
+    ["I believe people love to buy from me.","People feel joy and trust when buying from me."],
+    ["I believe my offer changes lives.","My offer transforms lives and is deeply valuable."],
+    ["I believe people want what I am offering.","The right people are actively searching for what I offer."],
+    ["I believe I can sell with confidence and integrity.","I sell with confidence, integrity, and ease."],
+    ["I believe rejection is not personal.","A no is simply redirection toward the right yes."],
+    ["I believe I can handle objections with grace.","I respond to objections with empathy and wisdom."],
+    ["I believe I can be successful without manipulating anyone.","My success grows from truth, service, and authenticity."],
+    ["I believe my story inspires others to take action.","My story activates courage and transformation in others."],
+    ["I believe success is possible for me.","Success is inevitable for me as I stay aligned and consistent."],
+    ["I believe I am not afraid of success.","I welcome success with open arms and gratitude."],
+    ["I believe I can handle being more successful than others around me.","My success uplifts, inspires, and blesses others."],
+    ["I believe failure does not define me.","Failure is simply feedback guiding me toward greater success."],
+    ["I believe setbacks are stepping stones to success.","Every setback strengthens my foundation for success."],
+    ["I believe I learn quickly from my mistakes.","I grow wiser and stronger with every experience."],
+    ["I believe I can start over at any point.","I always have the power to start fresh with clarity and courage."],
+    ["I believe success can come easily and naturally.","Success flows to me with ease, joy, and alignment."],
+    ["I believe I can grow through discomfort.","Discomfort is growth, and I embrace it with strength."],
+    ["I believe I can enjoy the process, not just the outcome.","I find joy and fulfillment in every step of the journey."],
+    ["I believe I am a natural leader.","Leadership is natural for me, and I grow stronger every day."],
+    ["I believe I attract motivated people into my business.","I magnetize motivated, aligned people into my business."],
+    ["I believe I can guide others without controlling them.","I guide with wisdom, love, and trust in their own path."],
+    ["I believe I can lead a large team with confidence.","I am confident, capable, and supported as I lead my team."],
+    ["I believe I am respected as a leader.","I am respected and valued as a leader in my business."],
+    ["I believe I can hold space for others' growth.","I hold empowering and safe space for others to grow."],
+    ["I believe people trust me and my guidance.","I am trustworthy, and my guidance brings clarity."],
+    ["I believe I don't have to know everything to lead.","I lead through authenticity, humility, and continual learning."],
+    ["I believe I can inspire others by my example.","My actions and choices naturally inspire others."],
+    ["I believe my success lifts others with me.","As I rise, I lift others to rise alongside me."]
+  ],
+  OPENING: [
+    "Welcome. What we are moving through today, subconscious rewiring, is something practiced through connection with God, the Creator of all that is. Jesus made a way for the Holy Spirit to live in us, and that allows us to step into these gifts of healing and transformation.",
+    "This work is not limited to one belief system. Whether you call it God, Source, Universe, or simply a higher power, we all carry something greater within us. When we access that, subconscious beliefs can shift in powerful ways. This process will meet you right where you are.",
+    "We are going to uncover and release subconscious beliefs that may have been holding you back from the success, abundance, and joy you are meant to experience in your business."
+  ],
+  GROUNDING: [
+    "Go ahead and place your feet firmly on the ground. Close your eyes.",
+    "Take a deep breath in through your nose. And exhale fully out of your mouth.",
+    "Again. Breathe in deeply, filling your belly. And release, letting your shoulders drop.",
+    "Feel your feet connected to the floor. Imagine roots growing from your feet down into the earth. Grounding you. Holding you. Supporting you.",
+    "Above your head, imagine a beautiful light. The light of God, Creator, or Source. Flowing down through you, filling you with love and safety.",
+    "When you are ready, open yourself up with a simple prayer or intention in your heart. I am ready to see the truth. I am ready to release what no longer serves me. I am ready to step into my highest potential.",
+    "Take one more deep breath here."
+  ],
+  HOWTO: [
+    "In a moment I will read fifty belief statements, ten at a time. Say each one silently or out loud, and then just notice how your body naturally sways. Stay in the stillness. You don't need to touch anything while the statements are being read.",
+    "If your body sways forward, that is your subconscious saying yes. This belief feels true for you. If you sway backward, that is your subconscious saying no. There is a block here, or the belief is not fully anchored.",
+    "Neither answer is right or wrong. This is simply information. After each set of ten, I will pause so you can open your eyes and mark which ones swayed you back. Then we will ground again before the next ten."
+  ],
+  REGROUND: [
+    "Let those settle. Close your eyes again.",
+    "Take a deep breath in through your nose... and let it all the way out. Feel your feet on the floor. The roots holding you. The light above you, filling you with love and safety.",
+    "When you're ready, here are the next ten."
+  ],
+  RELEASE: [
+    "You have now seen some of the beliefs that were hidden in your subconscious. Let's release what no longer serves you.",
+    "Close your eyes again. Imagine all of the no beliefs as heavy stones you have been carrying in a backpack. Feel the weight.",
+    "Now imagine yourself taking off that backpack, and setting it down in front of you.",
+    "Hand it over to God, the Creator, the Light. Watch as it dissolves into love. You don't need to hold it anymore.",
+    "Breathe in freedom. And exhale the old weight.",
+    "Say softly to yourself. I release every belief that is not mine, that does not serve me, and that is not aligned with my highest truth. I let it go now."
+  ],
+  REWIRE_INTRO: [
+    "Now let's install new, empowering beliefs to take their place. I will read them one at a time. Repeat after me, silently or out loud, and imagine the words flowing into your heart, into your cells, into your subconscious."
+  ],
+  SEALING: [
+    "To seal this in, place your hands on your heart. Take a deep breath, and say to yourself.",
+    "I accept these new truths. They are mine now. They are anchored in my mind, body, and spirit. I walk forward in alignment with my highest success.",
+    "Imagine golden light filling your entire body. Locking in these rewired beliefs. Protecting them. Keeping them strong.",
+    "Take one more deep, grounding breath. Wiggle your fingers and toes. And when you are ready, open your eyes.",
+    "Now, say this out loud. I am worthy. I am capable. I am abundant. I am a leader. Success flows through me and blesses others.",
+    "Welcome to your new reality. You are rewired for success."
+  ],
+  UI: {
+    tagline: 'Faith-rooted · Read aloud for you · At your pace',
+    setupTitle: 'Set your session',
+    setupDesc: "Pick a voice and pace, press Begin, and let it guide you — grounding first, then the 50 test statements read ten at a time, hands-free, so you stay in the state. After each set of ten you'll open your eyes, mark which beliefs swayed you back, and be grounded again before the next ten. Then the release, the rewires (all 50, or just your blocks), and the sealing.",
+    lblLang: 'Language', lblVoice: 'Voice', lblRate: 'Speaking pace', lblHold: 'Silence after each belief (sway & repeat time)',
+    testBtn: 'Test the voice', testLine: "This is how I'll sound. Ready when you are.",
+    soundHint: 'No sound? Check your volume, tap Test again, and make sure this page is open in your own browser — audio can be blocked inside previews.',
+    begin: 'Begin', pause: 'Pause', resume: 'Resume', again: 'Start again',
+    phases: ['Opening','Grounding','Testing','Release','Rewiring','Sealing'],
+    readyLabel: 'Ready when you are', readyText: "Find a quiet place. Feet on the floor. When you're ready, press Begin.",
+    catLabel: 'Next category', swayLabel: 'Feel your sway', swaySub: "Just notice the sway. You'll mark it at the end of this set.",
+    repeatLabel: 'Repeat after me', repeatSub: 'Say it out loud, let it land.',
+    recapTitleSuffix: ' — mark your sways',
+    recapHint: 'Tap any belief that swayed you <strong>backward</strong> — those are your blocks. Leave the forward ones as they are. No memory test — just what you noticed.',
+    recapForward: 'Forward', recapBack: 'Swayed back', recapContinue: 'Continue — ground for the next set',
+    setDoneLabel: 'Set complete', setDoneText: c => c + ' — done. Open your eyes gently.', setDoneSub: 'Mark your sways below, then continue.',
+    testDoneLabel: 'Testing complete',
+    testDoneSome: n => 'Your body said "not yet" to ' + n + ' belief' + (n > 1 ? 's' : '') + ". Let's release them.",
+    testDoneNone: "Every belief tested strong. We'll still release and reinforce.",
+    pressNext: "Press Next when you're ready.",
+    chooseLabel: 'Choose your rewire', chooseText: 'Rewire all fifty beliefs, or focus on the ones that swayed back?',
+    allBtn: 'All 50 beliefs', mineBtn: n => 'Just my ' + n + ' block' + (n > 1 ? 's' : ''),
+    endLabel: 'Sealed', endText: 'Welcome to your new reality. You are rewired for success.', endSub: 'Come back to this any time.',
+    beliefWord: 'Belief', ofWord: 'of', toRewire: 'to rewire', rewireWord: 'Rewire',
+    sumBeliefs: 'Read the 50 beliefs myself',
+    pageNote: "Your voice, pace, and last session's blocks stay on this device only.",
+    noSpeech: 'This browser cannot speak text aloud. Open the written script below and read it at your own pace.'
+  }
+},
+fr: {
+  CATS: [['Valeur personnelle et identité',0,9],['Argent et réception',10,19],['Vente et impact',20,29],['Succès et échec',30,39],['Leadership et équipe',40,49]],
+  BELIEFS: [
+    ["Je crois que je suis digne de réussir.","Je suis digne de réussir, simplement parce que j'existe."],
+    ["Je crois que je suis capable de bâtir une entreprise florissante.","Je suis pleinement capable et outillée pour créer une entreprise florissante."],
+    ["Je crois que j'ai ce qu'il faut pour être un leader.","Je suis faite pour diriger, et mon leadership unique est une bénédiction pour les autres."],
+    ["Je crois que je suis assez intelligente pour réussir.","Je suis intelligente, pleine de ressources, et j'apprends vite ce dont j'ai besoin."],
+    ["Je crois que les gens veulent entendre ce que j'ai à dire.","Ma voix a de la valeur, et les bonnes personnes l'attendent."],
+    ["Je crois que je mérite d'être vue.","Être pleinement vue est sécuritaire et me rend plus forte."],
+    ["Je crois que je suis confiante quand je partage mon histoire.","Mon histoire porte guérison et inspiration pour les autres."],
+    ["Je crois que je suis à l'aise d'être visible en ligne.","La visibilité est naturelle et joyeuse pour moi."],
+    ["Je crois que je peux être authentique dans mon entreprise en toute sécurité.","Mon authenticité est magnétique et bâtit la confiance."],
+    ["Je crois que je suis suffisante, telle que je suis, pour créer le succès.","Qui je suis est plus que suffisant pour créer un succès durable."],
+    ["Je crois que je peux gagner beaucoup d'argent et rester humble.","Je peux être riche, généreuse et ancrée, tout à la fois."],
+    ["Je crois que l'argent vient à moi facilement.","Je suis ouverte et alignée pour que l'argent vienne à moi facilement."],
+    ["Je crois que je peux gérer de grandes sommes d'argent.","Je suis en sécurité, sage et capable de gérer de grandes sommes d'argent."],
+    ["Je crois que les gens veulent me payer pour ma valeur.","Les gens me paient avec joie parce que mon travail en vaut la peine."],
+    ["Je crois que je peux être riche et généreuse.","Ma richesse augmente ma capacité de donner et de bénir les autres."],
+    ["Je crois qu'il est sécuritaire pour moi de recevoir de l'argent.","Recevoir de l'argent en abondance est bon et sécuritaire pour moi."],
+    ["Je crois que je peux créer un revenu constant.","Je suis alignée avec un revenu constant et fluide."],
+    ["Je crois que je peux subvenir aux besoins de ma famille avec cette entreprise.","Mon entreprise pourvoit abondamment aux besoins de ma famille."],
+    ["Je crois que l'argent est bon et sécuritaire.","L'argent est un outil neutre, et je l'utilise pour le bien."],
+    ["Je crois que ma réussite financière bénit les autres.","Chaque dollar que je gagne crée des vagues de bénédiction."],
+    ["Je crois que je sais vendre sans être insistante.","Vendre, pour moi, c'est simplement partager, avec amour et naturel."],
+    ["Je crois que la vente, c'est partager avec le cœur.","Mes ventes coulent de l'authenticité et du service."],
+    ["Je crois que les gens aiment acheter de moi.","Les gens ressentent joie et confiance en achetant de moi."],
+    ["Je crois que mon offre change des vies.","Mon offre transforme des vies et a une valeur profonde."],
+    ["Je crois que les gens veulent ce que j'offre.","Les bonnes personnes cherchent activement ce que j'offre."],
+    ["Je crois que je peux vendre avec confiance et intégrité.","Je vends avec confiance, intégrité et facilité."],
+    ["Je crois que le rejet n'est pas personnel.","Un non est simplement une redirection vers le bon oui."],
+    ["Je crois que je peux accueillir les objections avec grâce.","Je réponds aux objections avec empathie et sagesse."],
+    ["Je crois que je peux réussir sans manipuler personne.","Mon succès grandit de la vérité, du service et de l'authenticité."],
+    ["Je crois que mon histoire inspire les autres à passer à l'action.","Mon histoire éveille le courage et la transformation chez les autres."],
+    ["Je crois que le succès est possible pour moi.","Le succès est inévitable pour moi tant que je reste alignée et constante."],
+    ["Je crois que je n'ai pas peur du succès.","J'accueille le succès à bras ouverts, avec gratitude."],
+    ["Je crois que je peux réussir plus que les gens autour de moi.","Mon succès élève, inspire et bénit les autres."],
+    ["Je crois que l'échec ne me définit pas.","L'échec est simplement une rétroaction qui me guide vers un plus grand succès."],
+    ["Je crois que les revers sont des tremplins vers le succès.","Chaque revers renforce les fondations de mon succès."],
+    ["Je crois que j'apprends vite de mes erreurs.","Je deviens plus sage et plus forte à chaque expérience."],
+    ["Je crois que je peux recommencer à tout moment.","J'ai toujours le pouvoir de repartir à neuf avec clarté et courage."],
+    ["Je crois que le succès peut venir facilement et naturellement.","Le succès coule vers moi avec facilité, joie et alignement."],
+    ["Je crois que je peux grandir à travers l'inconfort.","L'inconfort, c'est la croissance, et je l'embrasse avec force."],
+    ["Je crois que je peux savourer le chemin, pas seulement le résultat.","Je trouve joie et satisfaction à chaque étape du parcours."],
+    ["Je crois que je suis une leader naturelle.","Le leadership est naturel pour moi, et je me renforce chaque jour."],
+    ["Je crois que j'attire des personnes motivées dans mon entreprise.","J'attire comme un aimant des personnes motivées et alignées."],
+    ["Je crois que je peux guider les autres sans les contrôler.","Je guide avec sagesse, amour et confiance en leur propre chemin."],
+    ["Je crois que je peux diriger une grande équipe avec confiance.","Je suis confiante, capable et soutenue à la tête de mon équipe."],
+    ["Je crois que je suis respectée comme leader.","Je suis respectée et valorisée comme leader dans mon entreprise."],
+    ["Je crois que je peux tenir un espace pour la croissance des autres.","Je tiens un espace sûr et porteur pour la croissance des autres."],
+    ["Je crois que les gens me font confiance, à moi et à mes conseils.","Je suis digne de confiance, et mes conseils apportent de la clarté."],
+    ["Je crois que je n'ai pas besoin de tout savoir pour diriger.","Je dirige par l'authenticité, l'humilité et l'apprentissage continu."],
+    ["Je crois que je peux inspirer les autres par mon exemple.","Mes gestes et mes choix inspirent naturellement les autres."],
+    ["Je crois que mon succès élève les autres avec moi.","En m'élevant, j'élève les autres à mes côtés."]
+  ],
+  OPENING: [
+    "Bienvenue. Ce que nous traversons aujourd'hui, la reprogrammation du subconscient, se pratique dans la connexion avec Dieu, le Créateur de tout ce qui est. Jésus a ouvert le chemin pour que le Saint-Esprit vive en nous, et cela nous permet d'entrer dans ces dons de guérison et de transformation.",
+    "Ce travail n'appartient pas à une seule croyance. Que tu l'appelles Dieu, la Source, l'Univers ou simplement une puissance supérieure, nous portons tous quelque chose de plus grand en nous. Quand nous y accédons, les croyances du subconscient peuvent changer de façon puissante. Ce processus te rejoindra exactement là où tu es.",
+    "Nous allons découvrir et libérer les croyances subconscientes qui t'ont peut-être retenue loin du succès, de l'abondance et de la joie que tu es appelée à vivre dans ton entreprise."
+  ],
+  GROUNDING: [
+    "Pose fermement tes pieds au sol. Ferme les yeux.",
+    "Prends une grande inspiration par le nez. Et expire complètement par la bouche.",
+    "Encore. Inspire profondément, remplis ton ventre. Et relâche, laisse tomber tes épaules.",
+    "Sens tes pieds connectés au sol. Imagine des racines qui poussent de tes pieds jusque dans la terre. Elles t'ancrent. Elles te tiennent. Elles te soutiennent.",
+    "Au-dessus de ta tête, imagine une belle lumière. La lumière de Dieu, du Créateur, de la Source. Elle descend à travers toi et te remplit d'amour et de sécurité.",
+    "Quand tu es prête, ouvre-toi au processus avec une simple prière ou intention dans ton cœur. Je suis prête à voir la vérité. Je suis prête à libérer ce qui ne me sert plus. Je suis prête à entrer dans mon plus haut potentiel.",
+    "Prends encore une grande respiration ici."
+  ],
+  HOWTO: [
+    "Dans un instant, je vais lire cinquante affirmations, dix à la fois. Dis chacune en silence ou à voix haute, puis remarque simplement comment ton corps se balance naturellement. Reste dans le calme. Tu n'as rien à toucher pendant la lecture.",
+    "Si ton corps bascule vers l'avant, ton subconscient dit oui. Cette croyance est vraie pour toi. Si tu bascules vers l'arrière, ton subconscient dit non. Il y a un blocage, ou la croyance n'est pas encore ancrée.",
+    "Aucune réponse n'est bonne ou mauvaise. C'est simplement de l'information. Après chaque série de dix, je ferai une pause pour que tu ouvres les yeux et notes celles qui t'ont fait basculer vers l'arrière. Puis nous nous réancrerons avant les dix suivantes."
+  ],
+  REGROUND: [
+    "Laisse tout cela se déposer. Referme les yeux.",
+    "Prends une grande inspiration par le nez... et laisse tout sortir. Sens tes pieds au sol. Les racines qui te tiennent. La lumière au-dessus de toi, qui te remplit d'amour et de sécurité.",
+    "Quand tu es prête, voici les dix suivantes."
+  ],
+  RELEASE: [
+    "Tu viens de voir certaines des croyances cachées dans ton subconscient. Libérons ce qui ne te sert plus.",
+    "Referme les yeux. Imagine toutes les croyances « non » comme de lourdes pierres que tu portes dans un sac à dos. Sens le poids.",
+    "Maintenant, imagine que tu enlèves ce sac, et que tu le déposes devant toi.",
+    "Remets-le à Dieu, au Créateur, à la Lumière. Regarde-le se dissoudre dans l'amour. Tu n'as plus besoin de le porter.",
+    "Inspire la liberté. Et expire le vieux poids.",
+    "Dis doucement en toi-même. Je libère chaque croyance qui n'est pas la mienne, qui ne me sert pas, et qui n'est pas alignée avec ma plus haute vérité. Je la laisse aller maintenant."
+  ],
+  REWIRE_INTRO: [
+    "Maintenant, installons de nouvelles croyances porteuses à leur place. Je vais les lire une à la fois. Répète après moi, en silence ou à voix haute, et imagine les mots couler dans ton cœur, dans tes cellules, dans ton subconscient."
+  ],
+  SEALING: [
+    "Pour sceller tout cela, pose tes mains sur ton cœur. Prends une grande respiration, et dis en toi-même.",
+    "J'accepte ces nouvelles vérités. Elles sont miennes maintenant. Elles sont ancrées dans mon esprit, mon corps et mon âme. J'avance alignée avec mon plus grand succès.",
+    "Imagine une lumière dorée qui remplit tout ton corps. Elle verrouille ces croyances reprogrammées. Elle les protège. Elle les garde fortes.",
+    "Prends une dernière respiration profonde et ancrée. Bouge tes doigts et tes orteils. Et quand tu es prête, ouvre les yeux.",
+    "Maintenant, dis ceci à voix haute. Je suis digne. Je suis capable. Je suis abondante. Je suis une leader. Le succès coule à travers moi et bénit les autres.",
+    "Bienvenue dans ta nouvelle réalité. Tu es reprogrammée pour le succès."
+  ],
+  UI: {
+    tagline: 'Enracinée dans la foi · Lu à voix haute pour toi · À ton rythme',
+    setupTitle: 'Prépare ta séance',
+    setupDesc: "Choisis une voix et un rythme, appuie sur Commencer, et laisse-toi guider — l'ancrage d'abord, puis les 50 affirmations lues dix à la fois, mains libres, pour rester dans l'état. Après chaque série de dix, tu ouvres les yeux, tu notes celles qui t'ont fait basculer vers l'arrière, puis on se réancre avant les dix suivantes. Ensuite viennent la libération, la reprogrammation (les 50, ou seulement tes blocages), et le scellement.",
+    lblLang: 'Langue', lblVoice: 'Voix', lblRate: 'Rythme de la voix', lblHold: 'Silence après chaque affirmation (temps pour sentir et répéter)',
+    testBtn: 'Tester la voix', testLine: 'Voici ma voix. Quand tu es prête, on commence.',
+    soundHint: "Pas de son? Vérifie le volume, réessaie Tester, et assure-toi d'avoir ouvert la page dans ton navigateur — l'audio peut être bloqué dans les aperçus.",
+    begin: 'Commencer', pause: 'Pause', resume: 'Reprendre', again: 'Recommencer',
+    phases: ['Ouverture','Ancrage','Test','Libération','Reprogrammation','Scellement'],
+    readyLabel: 'Quand tu es prête', readyText: 'Trouve un endroit calme. Les pieds au sol. Quand tu es prête, appuie sur Commencer.',
+    catLabel: 'Prochaine catégorie', swayLabel: 'Sens ton corps', swaySub: 'Remarque simplement le balancement. Tu le noteras à la fin de la série.',
+    repeatLabel: 'Répète après moi', repeatSub: "Dis-le à voix haute, laisse-le s'ancrer.",
+    recapTitleSuffix: ' — note tes balancements',
+    recapHint: "Touche chaque croyance qui t'a fait basculer vers l'<strong>arrière</strong> — ce sont tes blocages. Laisse les autres telles quelles. Pas de test de mémoire — juste ce que tu as remarqué.",
+    recapForward: "Vers l'avant", recapBack: "Vers l'arrière", recapContinue: 'Continuer — ancrage pour la prochaine série',
+    setDoneLabel: 'Série terminée', setDoneText: c => c + ' — terminé. Ouvre doucement les yeux.', setDoneSub: 'Note tes balancements ci-dessous, puis continue.',
+    testDoneLabel: 'Test terminé',
+    testDoneSome: n => "Ton corps a dit « pas encore » à " + n + ' croyance' + (n > 1 ? 's' : '') + '. Libérons-les.',
+    testDoneNone: 'Chaque croyance est solide. On va quand même libérer et renforcer.',
+    pressNext: 'Appuie sur Suivant quand tu es prête.',
+    chooseLabel: 'Choisis ta reprogrammation', chooseText: "Reprogrammer les cinquante croyances, ou seulement celles qui ont basculé vers l'arrière?",
+    allBtn: 'Les 50 croyances', mineBtn: n => 'Seulement mes ' + n + ' blocage' + (n > 1 ? 's' : ''),
+    endLabel: 'Scellé', endText: 'Bienvenue dans ta nouvelle réalité. Tu es reprogrammée pour le succès.', endSub: 'Reviens ici quand tu veux.',
+    beliefWord: 'Croyance', ofWord: 'sur', toRewire: 'à reprogrammer', rewireWord: 'Reprogrammation',
+    sumBeliefs: 'Lire les 50 croyances moi-même',
+    pageNote: 'Ta voix, ton rythme et tes blocages restent sur cet appareil seulement.',
+    noSpeech: 'Ce navigateur ne peut pas lire à voix haute. Ouvre le texte ci-dessous et lis-le à ton rythme.'
+  }
+},
+es: {
+  CATS: [['Valor propio e identidad',0,9],['Dinero y recibir',10,19],['Ventas e impacto',20,29],['Éxito y fracaso',30,39],['Liderazgo y equipo',40,49]],
+  BELIEFS: [
+    ["Creo que soy digna del éxito.","Soy digna del éxito, simplemente porque existo."],
+    ["Creo que soy capaz de construir un negocio próspero.","Soy plenamente capaz y tengo todo lo necesario para crear un negocio próspero."],
+    ["Creo que tengo lo que se necesita para ser líder.","Nací para liderar, y mi liderazgo único bendice a los demás."],
+    ["Creo que soy lo suficientemente inteligente para triunfar.","Soy inteligente, llena de recursos, y aprendo rápido lo que necesito."],
+    ["Creo que la gente quiere escuchar lo que tengo que decir.","Mi voz es valiosa, y las personas correctas la están esperando."],
+    ["Creo que merezco ser vista.","Ser vista plenamente es seguro y me fortalece."],
+    ["Creo que comparto mi historia con confianza.","Mi historia lleva sanación e inspiración a los demás."],
+    ["Creo que me siento cómoda siendo visible en línea.","La visibilidad es natural y alegre para mí."],
+    ["Creo que es seguro ser auténtica en mi negocio.","Mi autenticidad es magnética y construye confianza."],
+    ["Creo que soy suficiente, tal como soy, para crear éxito.","Quien soy es más que suficiente para crear un éxito duradero."],
+    ["Creo que puedo ganar mucho dinero y seguir siendo humilde.","Puedo ser próspera, generosa y estar bien plantada, todo a la vez."],
+    ["Creo que el dinero fluye fácilmente hacia mí.","Estoy abierta y alineada para que el dinero fluya fácilmente hacia mí."],
+    ["Creo que puedo manejar grandes cantidades de dinero.","Estoy segura, soy sabia y capaz de manejar grandes cantidades de dinero."],
+    ["Creo que la gente quiere pagarme por mi valor.","La gente me paga con gusto porque mi trabajo lo vale."],
+    ["Creo que puedo ser rica y generosa.","Mi riqueza expande mi capacidad de dar y bendecir a otros."],
+    ["Creo que es seguro para mí recibir dinero.","Recibir dinero en abundancia es bueno y seguro para mí."],
+    ["Creo que puedo crear ingresos constantes.","Estoy alineada con ingresos constantes y fluidos."],
+    ["Creo que puedo sostener a mi familia con este negocio.","Mi negocio provee abundantemente para las necesidades de mi familia."],
+    ["Creo que el dinero es bueno y seguro.","El dinero es una herramienta neutral, y yo la uso para el bien."],
+    ["Creo que mi éxito financiero bendice a otros.","Cada dólar que gano crea ondas de bendición."],
+    ["Creo que sé vender sin presionar.","Vender, para mí, es simplemente compartir, con amor y naturalidad."],
+    ["Creo que vender es compartir desde el corazón.","Mis ventas fluyen desde la autenticidad y el servicio."],
+    ["Creo que a la gente le encanta comprarme.","La gente siente alegría y confianza al comprarme."],
+    ["Creo que mi oferta cambia vidas.","Mi oferta transforma vidas y tiene un valor profundo."],
+    ["Creo que la gente quiere lo que ofrezco.","Las personas correctas están buscando activamente lo que ofrezco."],
+    ["Creo que puedo vender con confianza e integridad.","Vendo con confianza, integridad y facilidad."],
+    ["Creo que el rechazo no es personal.","Un no es simplemente una redirección hacia el sí correcto."],
+    ["Creo que puedo manejar objeciones con gracia.","Respondo a las objeciones con empatía y sabiduría."],
+    ["Creo que puedo tener éxito sin manipular a nadie.","Mi éxito crece de la verdad, el servicio y la autenticidad."],
+    ["Creo que mi historia inspira a otros a actuar.","Mi historia despierta valor y transformación en los demás."],
+    ["Creo que el éxito es posible para mí.","El éxito es inevitable para mí mientras me mantenga alineada y constante."],
+    ["Creo que no le tengo miedo al éxito.","Recibo el éxito con los brazos abiertos y con gratitud."],
+    ["Creo que puedo tener más éxito que quienes me rodean.","Mi éxito eleva, inspira y bendice a los demás."],
+    ["Creo que el fracaso no me define.","El fracaso es solo retroalimentación que me guía hacia un éxito mayor."],
+    ["Creo que los tropiezos son escalones hacia el éxito.","Cada tropiezo fortalece los cimientos de mi éxito."],
+    ["Creo que aprendo rápido de mis errores.","Me vuelvo más sabia y más fuerte con cada experiencia."],
+    ["Creo que puedo empezar de nuevo en cualquier momento.","Siempre tengo el poder de empezar de nuevo con claridad y valentía."],
+    ["Creo que el éxito puede llegar fácil y naturalmente.","El éxito fluye hacia mí con facilidad, alegría y alineación."],
+    ["Creo que puedo crecer a través de la incomodidad.","La incomodidad es crecimiento, y la abrazo con fuerza."],
+    ["Creo que puedo disfrutar el proceso, no solo el resultado.","Encuentro alegría y plenitud en cada paso del camino."],
+    ["Creo que soy una líder natural.","El liderazgo es natural en mí, y me fortalezco cada día."],
+    ["Creo que atraigo personas motivadas a mi negocio.","Atraigo como imán a personas motivadas y alineadas."],
+    ["Creo que puedo guiar a otros sin controlarlos.","Guío con sabiduría, amor y confianza en su propio camino."],
+    ["Creo que puedo liderar un gran equipo con confianza.","Soy confiada, capaz y sostenida al liderar mi equipo."],
+    ["Creo que soy respetada como líder.","Soy respetada y valorada como líder en mi negocio."],
+    ["Creo que puedo sostener el espacio para el crecimiento de otros.","Sostengo un espacio seguro y fértil para que otros crezcan."],
+    ["Creo que la gente confía en mí y en mi guía.","Soy digna de confianza, y mi guía trae claridad."],
+    ["Creo que no necesito saberlo todo para liderar.","Lidero con autenticidad, humildad y aprendizaje continuo."],
+    ["Creo que puedo inspirar a otros con mi ejemplo.","Mis acciones y decisiones inspiran naturalmente a los demás."],
+    ["Creo que mi éxito eleva a otros conmigo.","Al elevarme, elevo a otros junto a mí."]
+  ],
+  OPENING: [
+    "Bienvenida. Lo que vamos a atravesar hoy, la reprogramación del subconsciente, se practica en conexión con Dios, el Creador de todo lo que existe. Jesús abrió el camino para que el Espíritu Santo viva en nosotros, y eso nos permite entrar en estos dones de sanación y transformación.",
+    "Este trabajo no pertenece a una sola creencia. Ya sea que lo llames Dios, la Fuente, el Universo o simplemente un poder superior, todos llevamos algo más grande dentro. Cuando accedemos a eso, las creencias del subconsciente pueden cambiar de forma poderosa. Este proceso te encontrará exactamente donde estás.",
+    "Vamos a descubrir y liberar creencias subconscientes que quizás te han estado alejando del éxito, la abundancia y la alegría que estás destinada a vivir en tu negocio."
+  ],
+  GROUNDING: [
+    "Apoya firmemente tus pies en el suelo. Cierra los ojos.",
+    "Toma una respiración profunda por la nariz. Y exhala completamente por la boca.",
+    "Otra vez. Inhala profundo, llenando tu vientre. Y suelta, dejando caer los hombros.",
+    "Siente tus pies conectados al suelo. Imagina raíces que crecen desde tus pies hacia la tierra. Te anclan. Te sostienen. Te apoyan.",
+    "Sobre tu cabeza, imagina una luz hermosa. La luz de Dios, del Creador, de la Fuente. Desciende a través de ti y te llena de amor y seguridad.",
+    "Cuando estés lista, ábrete al proceso con una simple oración o intención en tu corazón. Estoy lista para ver la verdad. Estoy lista para soltar lo que ya no me sirve. Estoy lista para entrar en mi máximo potencial.",
+    "Toma una respiración profunda más aquí."
+  ],
+  HOWTO: [
+    "En un momento voy a leer cincuenta afirmaciones, de diez en diez. Di cada una en silencio o en voz alta, y solo nota cómo tu cuerpo se balancea naturalmente. Quédate en la quietud. No necesitas tocar nada mientras se leen.",
+    "Si tu cuerpo se inclina hacia adelante, tu subconsciente dice sí. Esta creencia es verdadera para ti. Si te inclinas hacia atrás, tu subconsciente dice no. Hay un bloqueo, o la creencia aún no está anclada.",
+    "Ninguna respuesta es buena o mala. Es simplemente información. Después de cada serie de diez, haré una pausa para que abras los ojos y marques cuáles te inclinaron hacia atrás. Luego nos anclaremos de nuevo antes de las siguientes diez."
+  ],
+  REGROUND: [
+    "Deja que todo se asiente. Cierra los ojos otra vez.",
+    "Toma una respiración profunda por la nariz... y suéltala por completo. Siente tus pies en el suelo. Las raíces que te sostienen. La luz sobre ti, llenándote de amor y seguridad.",
+    "Cuando estés lista, aquí vienen las siguientes diez."
+  ],
+  RELEASE: [
+    "Acabas de ver algunas de las creencias escondidas en tu subconsciente. Vamos a soltar lo que ya no te sirve.",
+    "Cierra los ojos otra vez. Imagina todas las creencias que dijeron no como piedras pesadas que cargas en una mochila. Siente el peso.",
+    "Ahora imagina que te quitas esa mochila, y la pones frente a ti.",
+    "Entrégasela a Dios, al Creador, a la Luz. Mira cómo se disuelve en amor. Ya no necesitas cargarla.",
+    "Inhala libertad. Y exhala el viejo peso.",
+    "Di suavemente para ti misma. Suelto toda creencia que no es mía, que no me sirve, y que no está alineada con mi verdad más alta. La dejo ir ahora."
+  ],
+  REWIRE_INTRO: [
+    "Ahora vamos a instalar nuevas creencias poderosas en su lugar. Las leeré una por una. Repite después de mí, en silencio o en voz alta, e imagina las palabras fluyendo hacia tu corazón, tus células, tu subconsciente."
+  ],
+  SEALING: [
+    "Para sellar todo esto, pon tus manos sobre tu corazón. Toma una respiración profunda, y di para ti misma.",
+    "Acepto estas nuevas verdades. Ahora son mías. Están ancladas en mi mente, mi cuerpo y mi espíritu. Camino alineada con mi mayor éxito.",
+    "Imagina una luz dorada llenando todo tu cuerpo. Sella estas creencias reprogramadas. Las protege. Las mantiene fuertes.",
+    "Toma una última respiración profunda y anclada. Mueve los dedos de las manos y de los pies. Y cuando estés lista, abre los ojos.",
+    "Ahora, di esto en voz alta. Soy digna. Soy capaz. Soy abundante. Soy líder. El éxito fluye a través de mí y bendice a otros.",
+    "Bienvenida a tu nueva realidad. Estás reprogramada para el éxito."
+  ],
+  UI: {
+    tagline: 'Con raíces de fe · Leído en voz alta para ti · A tu ritmo',
+    setupTitle: 'Prepara tu sesión',
+    setupDesc: "Elige una voz y un ritmo, presiona Comenzar, y déjate guiar: primero el anclaje, luego las 50 afirmaciones leídas de diez en diez, sin tocar nada, para quedarte en el estado. Después de cada serie de diez abres los ojos, marcas cuáles te inclinaron hacia atrás, y te anclas de nuevo antes de las siguientes diez. Luego la liberación, la reprogramación (las 50, o solo tus bloqueos), y el sellado.",
+    lblLang: 'Idioma', lblVoice: 'Voz', lblRate: 'Ritmo de la voz', lblHold: 'Silencio después de cada afirmación (tiempo para sentir y repetir)',
+    testBtn: 'Probar la voz', testLine: 'Así sueno. Cuando estés lista, comenzamos.',
+    soundHint: '¿Sin sonido? Revisa el volumen, prueba otra vez, y asegúrate de abrir esta página en tu navegador; el audio puede bloquearse en las vistas previas.',
+    begin: 'Comenzar', pause: 'Pausa', resume: 'Continuar', again: 'Empezar de nuevo',
+    phases: ['Apertura','Anclaje','Prueba','Liberación','Reprogramación','Sellado'],
+    readyLabel: 'Cuando estés lista', readyText: 'Busca un lugar tranquilo. Pies en el suelo. Cuando estés lista, presiona Comenzar.',
+    catLabel: 'Siguiente categoría', swayLabel: 'Siente tu cuerpo', swaySub: 'Solo nota el balanceo. Lo marcarás al final de esta serie.',
+    repeatLabel: 'Repite después de mí', repeatSub: 'Dilo en voz alta, deja que se ancle.',
+    recapTitleSuffix: ' — marca tus balanceos',
+    recapHint: 'Toca cada creencia que te inclinó hacia <strong>atrás</strong>: esos son tus bloqueos. Deja las demás como están. No es prueba de memoria, solo lo que notaste.',
+    recapForward: 'Hacia adelante', recapBack: 'Hacia atrás', recapContinue: 'Continuar — anclaje para la próxima serie',
+    setDoneLabel: 'Serie completa', setDoneText: c => c + ' — listo. Abre los ojos suavemente.', setDoneSub: 'Marca tus balanceos abajo y continúa.',
+    testDoneLabel: 'Prueba completa',
+    testDoneSome: n => 'Tu cuerpo dijo «todavía no» a ' + n + ' creencia' + (n > 1 ? 's' : '') + '. Vamos a soltarlas.',
+    testDoneNone: 'Cada creencia se sostuvo firme. Igual vamos a liberar y reforzar.',
+    pressNext: 'Presiona Siguiente cuando estés lista.',
+    chooseLabel: 'Elige tu reprogramación', chooseText: '¿Reprogramar las cincuenta creencias, o solo las que se inclinaron hacia atrás?',
+    allBtn: 'Las 50 creencias', mineBtn: n => 'Solo mis ' + n + ' bloqueo' + (n > 1 ? 's' : ''),
+    endLabel: 'Sellado', endText: 'Bienvenida a tu nueva realidad. Estás reprogramada para el éxito.', endSub: 'Vuelve aquí cuando quieras.',
+    beliefWord: 'Creencia', ofWord: 'de', toRewire: 'por reprogramar', rewireWord: 'Reprogramación',
+    sumBeliefs: 'Leer las 50 creencias yo misma',
+    pageNote: 'Tu voz, tu ritmo y tus bloqueos se quedan solo en este dispositivo.',
+    noSpeech: 'Este navegador no puede leer en voz alta. Abre el texto de abajo y léelo a tu ritmo.'
+  }
+}
+};
 
-/* ---------------- state ---------------- */
+/* ================= state ================= */
 const $ = id => document.getElementById(id);
+const prefs = (() => { try { return JSON.parse(localStorage.getItem('rewire-prefs') || '{}'); } catch (e) { return {}; } })();
+let lang = ['fr','es'].includes(prefs.lang) ? prefs.lang : 'en';
+let L = LANGS[lang];
 let queue = [], qi = 0, playing = false, holdTimer = null, chunkAbort = false;
 let noSet = new Set(), rewireScope = 'all', started = false;
-const prefs = (() => { try { return JSON.parse(localStorage.getItem('rewire-prefs')||'{}'); } catch(e){ return {}; } })();
-function savePrefs(){ try { localStorage.setItem('rewire-prefs', JSON.stringify({ voice:$('voice').value, rate:+$('rate').value, hold:+$('hold').value })); } catch(e){} }
-function saveNos(){ try { localStorage.setItem('rewire-nos', JSON.stringify([...noSet])); } catch(e){} }
-(() => { try { const n = JSON.parse(localStorage.getItem('rewire-nos')||'[]'); noSet = new Set(n); } catch(e){} })();
+function savePrefs(){ try { localStorage.setItem('rewire-prefs', JSON.stringify({ lang, voice: $('voice').value, rate: +$('rate').value, hold: +$('hold').value })); } catch (e) {} }
+function saveNos(){ try { localStorage.setItem('rewire-nos', JSON.stringify([...noSet])); } catch (e) {} }
+(() => { try { noSet = new Set(JSON.parse(localStorage.getItem('rewire-nos') || '[]')); } catch (e) {} })();
 
-/* ---------------- voices (curated: a few good ones, labeled by accent) ---------------- */
-function accentLabel(lang){
-  const m = {'en-US':'American','en-GB':'British','en-AU':'Australian','en-CA':'Canadian','en-IE':'Irish','en-IN':'Indian','en-ZA':'South African','en-NZ':'New Zealand'};
-  return m[lang] || 'English';
-}
+/* ================= voices: 2 women + 2 men, clean names ================= */
+const MALE_RE = { en: /^(william|guy|ryan|liam|davis|andrew|christopher|eric|jacob|tony|james|mark|david|george|thomas|brandon|connor|steffan|alex|daniel|fred)/i,
+                  fr: /^(henri|antoine|jean|claude|paul|thierry|guillaume|nicolas|mathieu|remy|rémy|fabrice|maurice|gerard|gérard|yves|thomas|alain)/i,
+                  es: /^(jorge|alvaro|álvaro|alonso|diego|pablo|raul|raúl|enrique|andres|andrés|juan|carlos|miguel|gerardo|liberto|saul|saúl|dario|darío|elias|elías|manuel|hernan|hernán)/i };
+const FEMALE_RE = { en: /^(aria|jenny|michelle|sonia|natasha|libby|emma|ava|clara|zira|susan|hazel|heather|samantha|karen|moira|tessa|jane|sara|nancy|amber|monica|olivia|elizabeth|abbi|bella|hollie|maisie|molly|emily|catherine|linda)/i,
+                    fr: /^(denise|sylvie|eloise|éloise|charline|celine|céline|julie|caroline|amelie|amélie|hortense|vivienne|jacqueline|brigitte|josephine|joséphine|yvette|coralie|virginie|audrey|marie)/i,
+                    es: /^(dalia|paloma|sabina|helena|elvira|esperanza|ximena|camila|sofia|sofía|lucia|lucía|maria|maría|isabela|renata|larissa|vera|abril|andrea|laura|monica|mónica|paulina|yolanda|carlota|catalina|triana)/i };
 function cleanName(n){
-  return n.replace(/Microsoft |Google |Apple |Online|\(Natural\)|Natural|Desktop/gi,'').replace(/[-–—]\s*English.*$/i,'').replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim() || n;
+  return n.replace(/Microsoft |Google |Apple |Online|\(Natural\)|Natural|Desktop|Mobile/gi, '')
+          .replace(/[-–—].*$/,'').replace(/\(.*?\)/g,'').replace(/\bfrançais\b|\benglish\b/gi,'').replace(/\s+/g,' ').trim() || n;
 }
 function loadVoices(){
   const sel = $('voice'); const all = speechSynthesis.getVoices();
   if (!all.length) return;
-  const pool = all.filter(v => /^en[-_]?/i.test(v.lang));
+  const pool = all.filter(v => v.lang.toLowerCase().startsWith(lang));
   const use = pool.length ? pool : all;
-  const score = v => (/natural/i.test(v.name)?8:0) + (/neural|online/i.test(v.name)?4:0) + (/google/i.test(v.name)?3:0) + (/aria|jenny|sonia|natasha|clara|libby|emma|ava|michelle/i.test(v.name)?2:0) + (/female|zira|susan|hazel|heather/i.test(v.name)?1:0);
-  const byAccent = {};
-  use.forEach(v => { const k = v.lang.replace('_','-'); (byAccent[k] = byAccent[k] || []).push(v); });
+  const score = v => (/natural/i.test(v.name) ? 8 : 0) + (/neural|online/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 3 : 0);
+  const females = [], males = [], other = [];
+  use.forEach(v => {
+    const first = cleanName(v.name).split(' ')[0];
+    if (FEMALE_RE[lang].test(first)) females.push(v);
+    else if (MALE_RE[lang].test(first)) males.push(v);
+    else other.push(v);
+  });
+  females.sort((a, b) => score(b) - score(a));
+  males.sort((a, b) => score(b) - score(a));
+  if (lang === 'en'){
+    const wIdx = males.findIndex(v => /william/i.test(v.name));
+    if (wIdx > 0) males.unshift(males.splice(wIdx, 1)[0]);
+  }
   const picks = [];
-  ['en-US','en-CA','en-GB','en-AU','en-IE','en-IN'].forEach(l => {
-    const vs = (byAccent[l] || []).sort((a,b) => score(b) - score(a));
-    if (vs[0]) picks.push(vs[0]);
-    if (l === 'en-US' && vs[1]) picks.push(vs[1]);
-  });
-  if (!picks.length) picks.push(...use.slice(0, 3));
+  const seen = new Set();
+  const add = v => { if (!v) return; const label = cleanName(v.name).split(' ')[0]; if (seen.has(label)) return; seen.add(label); picks.push({ v, label }); };
+  add(females[0]); add(males[0]); add(females[1]); add(males[1]);
+  other.sort((a, b) => score(b) - score(a));
+  while (picks.length < 4 && other.length) add(other.shift());
+  if (!picks.length) use.slice(0, 4).forEach(add);
   sel.innerHTML = '';
-  picks.slice(0, 6).forEach(v => {
-    const o = document.createElement('option'); o.value = v.name;
-    o.textContent = cleanName(v.name) + ' — ' + accentLabel(v.lang.replace('_','-'));
-    sel.appendChild(o);
-  });
-  if (prefs.voice && picks.find(v => v.name === prefs.voice)) sel.value = prefs.voice;
+  picks.slice(0, 4).forEach(p => { const o = document.createElement('option'); o.value = p.v.name; o.textContent = p.label; sel.appendChild(o); });
+  if (prefs.voice && picks.find(p => p.v.name === prefs.voice)) sel.value = prefs.voice;
+  else if (lang === 'en'){ const w = picks.find(p => /william/i.test(p.v.name)); if (w) sel.value = w.v.name; }
 }
 if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-else { $('spoken').textContent = 'This browser cannot speak text aloud. Open the written script below and read it at your own pace.'; }
 
-/* ---------------- speech engine ---------------- */
+/* ================= speech engine ================= */
 function speakChunks(text, done){
-  const parts = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+  const parts = text.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/g) || [text];
   chunkAbort = false;
   let i = 0;
   const next = () => {
@@ -384,10 +681,11 @@ function speakChunks(text, done){
     const u = new SpeechSynthesisUtterance(parts[i].trim());
     const v = speechSynthesis.getVoices().find(x => x.name === $('voice').value);
     if (v) u.voice = v;
+    u.lang = lang === 'fr' ? 'fr-CA' : lang === 'es' ? 'es-MX' : 'en-US';
     u.rate = +$('rate').value; u.pitch = 1;
     u.onend = () => { i++; setTimeout(next, 320); };
     u.onerror = () => { i++; setTimeout(next, 120); };
-    try { speechSynthesis.resume(); } catch (e) {}   /* un-sticks Chrome's silent paused state */
+    try { speechSynthesis.resume(); } catch (e) {}
     speechSynthesis.speak(u);
     try { speechSynthesis.resume(); } catch (e) {}
   };
@@ -395,32 +693,54 @@ function speakChunks(text, done){
 }
 function stopSpeech(){ chunkAbort = true; clearTimeout(holdTimer); speechSynthesis.cancel(); }
 
-/* ---------------- queue build ---------------- */
-function seg(phase, text, opts){ return Object.assign({phase, text}, opts||{}); }
+/* ================= queue ================= */
+function seg(phase, text, opts){ return Object.assign({ phase, text }, opts || {}); }
 function buildQueue(){
   queue = [];
-  OPENING.forEach(t => queue.push(seg(0,t)));
-  GROUNDING.forEach(t => queue.push(seg(1,t,{breathe:true, hold:4})));
-  HOWTO.forEach(t => queue.push(seg(2,t)));
-  CATS.forEach((cat, ci) => {
-    queue.push(seg(2, cat[0] + '.', {catHeader:true}));
-    for (let i = cat[1]; i <= cat[2]; i++) queue.push(seg(2, BELIEFS[i][0], {test:i}));
-    queue.push(seg(2, '', {recapCat: ci}));
-    if (ci < CATS.length - 1) REGROUND.forEach(t => queue.push(seg(2, t, {breathe:true, hold:3})));
+  L.OPENING.forEach(t => queue.push(seg(0, t)));
+  L.GROUNDING.forEach(t => queue.push(seg(1, t, { breathe: true, hold: 4 })));
+  L.HOWTO.forEach(t => queue.push(seg(2, t)));
+  L.CATS.forEach((cat, ci) => {
+    queue.push(seg(2, cat[0] + '.', { catHeader: true }));
+    for (let i = cat[1]; i <= cat[2]; i++) queue.push(seg(2, L.BELIEFS[i][0], { test: i }));
+    queue.push(seg(2, '', { recapCat: ci }));
+    if (ci < L.CATS.length - 1) L.REGROUND.forEach(t => queue.push(seg(2, t, { breathe: true, hold: 3 })));
   });
-  queue.push(seg(3, '', {releaseGate:true}));
-  RELEASE.forEach(t => queue.push(seg(3,t,{breathe:true, hold:3})));
-  queue.push(seg(4, '', {scopeGate:true}));
-  REWIRE_INTRO.forEach(t => queue.push(seg(4,t)));
-  BELIEFS.forEach((b,i) => queue.push(seg(4, b[1], {rewire:i})));
-  SEALING.forEach(t => queue.push(seg(5,t,{breathe:true, hold:3})));
-  queue.push(seg(5,'', {end:true}));
+  queue.push(seg(3, '', { releaseGate: true }));
+  L.RELEASE.forEach(t => queue.push(seg(3, t, { breathe: true, hold: 3 })));
+  queue.push(seg(4, '', { scopeGate: true }));
+  L.REWIRE_INTRO.forEach(t => queue.push(seg(4, t)));
+  L.BELIEFS.forEach((b, i) => queue.push(seg(4, b[1], { rewire: i })));
+  L.SEALING.forEach(t => queue.push(seg(5, t, { breathe: true, hold: 3 })));
+  queue.push(seg(5, '', { end: true }));
 }
 
-/* ---------------- UI ---------------- */
+/* ================= UI ================= */
+function applyLang(){
+  L = LANGS[lang];
+  $('langSel').value = lang;
+  $('tagline').textContent = L.UI.tagline;
+  $('setupTitle').textContent = L.UI.setupTitle;
+  $('setupDesc').textContent = L.UI.setupDesc;
+  $('lblLang').textContent = L.UI.lblLang;
+  $('lblVoice').textContent = L.UI.lblVoice;
+  $('lblRate').textContent = L.UI.lblRate;
+  $('lblHold').textContent = L.UI.lblHold;
+  $('testVoice').textContent = L.UI.testBtn;
+  $('soundHint').textContent = L.UI.soundHint;
+  $('recapHint').innerHTML = L.UI.recapHint;
+  $('recapDone').textContent = L.UI.recapContinue;
+  $('sumBeliefs').textContent = L.UI.sumBeliefs;
+  $('pageNote').textContent = L.UI.pageNote;
+  $('btnMain').textContent = started ? (playing ? L.UI.pause : L.UI.resume) : L.UI.begin;
+  if (!('speechSynthesis' in window)) $('spoken').textContent = L.UI.noSpeech;
+  else if (!started) { $('stageLabel').textContent = L.UI.readyLabel; $('spoken').textContent = L.UI.readyText; $('stageSub').textContent = ''; }
+  renderPhases(); renderBeliefList();
+  if ('speechSynthesis' in window) loadVoices();
+}
 function renderPhases(){
   const el = $('phases'); el.innerHTML = '';
-  PHASES.forEach((p,i) => {
+  L.UI.phases.forEach((p, i) => {
     const b = document.createElement('button');
     b.className = 'phase'; b.textContent = p;
     b.onclick = () => { if (!started) startSession(); jumpToPhase(i); };
@@ -428,16 +748,14 @@ function renderPhases(){
   });
 }
 function markPhase(i){
-  [...$('phases').children].forEach((c,k) => {
-    c.classList.toggle('active', k === i); c.classList.toggle('done', k < i);
-  });
+  [...$('phases').children].forEach((c, k) => { c.classList.toggle('active', k === i); c.classList.toggle('done', k < i); });
 }
 function renderBeliefList(){
   const el = $('beliefList'); let html = '';
-  CATS.forEach(c => {
+  L.CATS.forEach(c => {
     html += '<div class="belief-cat">' + c[0] + '</div>';
     for (let i = c[1]; i <= c[2]; i++){
-      html += '<div class="belief"><div class="t"><span class="n">' + (i+1) + '</span>Test: ' + BELIEFS[i][0] + '</div><div class="r">Rewire: ' + BELIEFS[i][1] + '</div></div>';
+      html += '<div class="belief"><div class="t"><span class="n">' + (i + 1) + '</span>' + L.BELIEFS[i][0] + '</div><div class="r">' + L.BELIEFS[i][1] + '</div></div>';
     }
   });
   el.innerHTML = html;
@@ -449,19 +767,19 @@ function updateProgress(){
   const cur = queue[qi];
   if (cur && cur.test !== undefined){
     $('progress').classList.add('show');
-    $('progressFill').style.width = ((cur.test+1)/50*100) + '%';
-    const cat = CATS.find(c => cur.test >= c[1] && cur.test <= c[2]);
-    $('progressText').textContent = 'Belief ' + (cur.test+1) + ' of 50 · ' + cat[0] + (noSet.size ? ' · ' + noSet.size + ' to rewire' : '');
+    $('progressFill').style.width = ((cur.test + 1) / 50 * 100) + '%';
+    const cat = L.CATS.find(c => cur.test >= c[1] && cur.test <= c[2]);
+    $('progressText').textContent = L.UI.beliefWord + ' ' + (cur.test + 1) + ' ' + L.UI.ofWord + ' 50 · ' + cat[0] + (noSet.size ? ' · ' + noSet.size + ' ' + L.UI.toRewire : '');
   } else if (cur && cur.rewire !== undefined){
     $('progress').classList.add('show');
-    const list = rewireScope === 'no' ? [...noSet] : BELIEFS.map((_,i)=>i);
+    const list = rewireScope === 'no' ? [...noSet] : L.BELIEFS.map((_, i) => i);
     const pos = list.indexOf(cur.rewire) + 1;
-    $('progressFill').style.width = (pos/list.length*100) + '%';
-    $('progressText').textContent = 'Rewire ' + pos + ' of ' + list.length;
+    $('progressFill').style.width = (pos / list.length * 100) + '%';
+    $('progressText').textContent = L.UI.rewireWord + ' ' + pos + ' ' + L.UI.ofWord + ' ' + list.length;
   } else { $('progress').classList.remove('show'); }
 }
 
-/* ---------------- playback ---------------- */
+/* ================= playback ================= */
 function playCurrent(){
   clearTimeout(holdTimer); $('recap').hidden = true; $('choice').classList.remove('show');
   $('breath').hidden = true; $('breath').classList.remove('live');
@@ -471,60 +789,54 @@ function playCurrent(){
   markPhase(s.phase); updateProgress();
   $('btnBack').disabled = qi === 0; $('btnNext').disabled = false;
 
-  // gates
   if (s.recapCat !== undefined){
     stopSpeech();
-    const cat = CATS[s.recapCat];
-    setStage('Set complete', cat[0] + ' — done. Open your eyes gently.', 'Mark your sways below, then continue.');
+    const cat = L.CATS[s.recapCat];
+    setStage(L.UI.setDoneLabel, L.UI.setDoneText(cat[0]), L.UI.setDoneSub);
     renderRecap(s.recapCat);
     $('recap').hidden = false;
-    playing = false; $('btnMain').textContent = 'Resume';
+    playing = false; $('btnMain').textContent = L.UI.resume;
     return;
   }
   if (s.releaseGate){
     stopSpeech();
-    setStage('Testing complete', noSet.size
-      ? 'Your body said "not yet" to ' + noSet.size + ' belief' + (noSet.size>1?'s':'') + '. Let’s release them.'
-      : 'Every belief tested strong. We’ll still release and reinforce.', 'Press Next when you’re ready.');
-    playing = false; $('btnMain').textContent = 'Resume';
+    setStage(L.UI.testDoneLabel, noSet.size ? L.UI.testDoneSome(noSet.size) : L.UI.testDoneNone, L.UI.pressNext);
+    playing = false; $('btnMain').textContent = L.UI.resume;
     return;
   }
   if (s.scopeGate){
     stopSpeech();
-    setStage('Choose your rewire', 'Rewire all fifty beliefs, or focus on the ones that swayed back?', '');
+    setStage(L.UI.chooseLabel, L.UI.chooseText, '');
     const c = $('choice'); c.innerHTML = '';
-    const all = document.createElement('button'); all.className = 'btn btn-yes'; all.textContent = 'All 50 beliefs';
-    all.onclick = () => { rewireScope = 'all'; qi++; playing = true; $('btnMain').textContent='Pause'; playCurrent(); };
+    const all = document.createElement('button'); all.className = 'btn btn-yes'; all.textContent = L.UI.allBtn;
+    all.onclick = () => { rewireScope = 'all'; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
     c.appendChild(all);
     if (noSet.size){
-      const mine = document.createElement('button'); mine.className = 'btn btn-no'; mine.textContent = 'Just my ' + noSet.size + ' block' + (noSet.size>1?'s':'');
-      mine.onclick = () => { rewireScope = 'no'; qi++; playing = true; $('btnMain').textContent='Pause'; playCurrent(); };
+      const mine = document.createElement('button'); mine.className = 'btn btn-no'; mine.textContent = L.UI.mineBtn(noSet.size);
+      mine.onclick = () => { rewireScope = 'no'; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
       c.appendChild(mine);
     }
-    c.classList.add('show'); playing = false; $('btnMain').textContent = 'Resume';
+    c.classList.add('show'); playing = false; $('btnMain').textContent = L.UI.resume;
     return;
   }
   if (s.end){
     stopSpeech();
-    setStage('Sealed', 'Welcome to your new reality. You are rewired for success.', 'Come back to this any time.');
-    playing = false; $('btnMain').textContent = 'Start again'; started = false; saveNos();
+    setStage(L.UI.endLabel, L.UI.endText, L.UI.endSub);
+    playing = false; $('btnMain').textContent = L.UI.again; started = false; saveNos();
+    $('setup').style.display = '';
     return;
   }
-  // skip rewires outside scope
   if (s.rewire !== undefined && rewireScope === 'no' && !noSet.has(s.rewire)){ qi++; playCurrent(); return; }
 
-  // normal spoken segment
-  const label = s.catHeader ? 'Next category' :
-    s.test !== undefined ? 'Feel your sway' :
-    s.rewire !== undefined ? 'Repeat after me' : PHASES[s.phase];
-  setStage(label, s.text, s.test !== undefined ? 'Just notice the sway. You’ll mark it at the end of this set.' : (s.rewire !== undefined ? 'Say it out loud, let it land.' : ''));
+  const label = s.catHeader ? L.UI.catLabel :
+    s.test !== undefined ? L.UI.swayLabel :
+    s.rewire !== undefined ? L.UI.repeatLabel : L.UI.phases[s.phase];
+  setStage(label, s.text, s.test !== undefined ? L.UI.swaySub : (s.rewire !== undefined ? L.UI.repeatSub : ''));
   if (s.breathe){ $('breath').hidden = false; $('breath').classList.add('live'); }
   if (!playing) return;
   speakChunks(s.text, () => {
     if (!playing) return;
-    if (s.test !== undefined){
-      holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
-    } else if (s.rewire !== undefined){
+    if (s.test !== undefined || s.rewire !== undefined){
       holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
     } else {
       holdTimer = setTimeout(advance, (s.hold ? s.hold : 1.2) * 1000);
@@ -536,60 +848,66 @@ function jumpToPhase(i){
   stopSpeech();
   qi = queue.findIndex(s => s.phase === i);
   if (qi < 0) qi = 0;
-  playing = true; $('btnMain').textContent = 'Pause';
+  playing = true; $('btnMain').textContent = L.UI.pause;
   playCurrent();
 }
 function startSession(){
   buildQueue(); started = true; qi = 0; playing = true;
-  if (rewireScope === undefined) rewireScope = 'all';
   $('setup').style.display = 'none';
-  $('btnMain').textContent = 'Pause';
+  $('btnMain').textContent = L.UI.pause;
   savePrefs();
   playCurrent();
 }
-
-/* ---------------- events ---------------- */
-$('btnMain').onclick = () => {
-  if (!started){ noSet = new Set(); saveNos(); startSession(); return; }
-  if (playing){ playing = false; stopSpeech(); $('btnMain').textContent = 'Resume'; }
-  else { playing = true; $('btnMain').textContent = 'Pause'; playCurrent(); }
-};
-$('btnNext').onclick = () => { stopSpeech(); advance(); };
-$('btnBack').onclick = () => { stopSpeech(); if (qi > 0){ qi--; } playCurrent(); };
 function renderRecap(ci){
-  const cat = CATS[ci]; const el = $('recapList'); el.innerHTML = '';
-  $('recapTitle').textContent = cat[0] + ' — mark your sways';
+  const cat = L.CATS[ci]; const el = $('recapList'); el.innerHTML = '';
+  $('recapTitle').textContent = cat[0] + L.UI.recapTitleSuffix;
   for (let i = cat[1]; i <= cat[2]; i++){
     const row = document.createElement('div'); row.className = 'recap-row';
     const setState = () => {
       const isNo = noSet.has(i);
-      row.innerHTML = '<span class="num">' + (i+1) + '</span><span class="txt">' + BELIEFS[i][0] + '</span><span class="recap-state ' + (isNo ? 'no' : 'yes') + '">' + (isNo ? 'Swayed back' : 'Forward') + '</span>';
+      row.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="txt">' + L.BELIEFS[i][0] + '</span><span class="recap-state ' + (isNo ? 'no' : 'yes') + '">' + (isNo ? L.UI.recapBack : L.UI.recapForward) + '</span>';
     };
     setState();
     row.onclick = () => { if (noSet.has(i)) noSet.delete(i); else noSet.add(i); saveNos(); setState(); };
     el.appendChild(row);
   }
 }
-$('recapDone').onclick = () => { $('recap').hidden = true; qi++; playing = true; $('btnMain').textContent = 'Pause'; playCurrent(); };
-$('rate').oninput = () => { $('rateVal').textContent = (+$('rate').value).toFixed(2) + '×'; savePrefs(); };
-$('hold').oninput = () => { $('holdVal').textContent = $('hold').value + ' s'; savePrefs(); };
-$('voice').onchange = savePrefs;
+
+/* ================= events ================= */
+$('btnMain').onclick = () => {
+  if (!started){ noSet = new Set(); saveNos(); startSession(); return; }
+  if (playing){ playing = false; stopSpeech(); $('btnMain').textContent = L.UI.resume; }
+  else { playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); }
+};
+$('btnNext').onclick = () => { stopSpeech(); advance(); };
+$('btnBack').onclick = () => { stopSpeech(); if (qi > 0){ qi--; } playCurrent(); };
+$('recapDone').onclick = () => { $('recap').hidden = true; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
+$('langSel').onchange = () => {
+  lang = ['fr','es'].includes($('langSel').value) ? $('langSel').value : 'en';
+  stopSpeech(); started = false; playing = false; queue = []; qi = 0;
+  $('setup').style.display = ''; $('recap').hidden = true; $('progress').classList.remove('show');
+  applyLang(); savePrefs();
+};
 $('testVoice').onclick = () => {
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
-  const u = new SpeechSynthesisUtterance("This is how I'll sound. Ready when you are.");
+  const u = new SpeechSynthesisUtterance(L.UI.testLine);
   const v = speechSynthesis.getVoices().find(x => x.name === $('voice').value);
   if (v) u.voice = v;
+  u.lang = lang === 'fr' ? 'fr-CA' : lang === 'es' ? 'es-MX' : 'en-US';
   u.rate = +$('rate').value;
   try { speechSynthesis.resume(); } catch (e) {}
   speechSynthesis.speak(u);
   try { speechSynthesis.resume(); } catch (e) {}
 };
+$('rate').oninput = () => { $('rateVal').textContent = (+$('rate').value).toFixed(2) + '×'; savePrefs(); };
+$('hold').oninput = () => { $('holdVal').textContent = $('hold').value + ' s'; savePrefs(); };
+$('voice').onchange = savePrefs;
 if (prefs.rate){ $('rate').value = prefs.rate; $('rateVal').textContent = (+prefs.rate).toFixed(2) + '×'; }
 if (prefs.hold){ $('hold').value = prefs.hold; $('holdVal').textContent = prefs.hold + ' s'; }
 window.addEventListener('beforeunload', stopSpeech);
-document.addEventListener('visibilitychange', () => { if (document.hidden){ playing = false; stopSpeech(); $('btnMain').textContent = 'Resume'; } });
+document.addEventListener('visibilitychange', () => { if (document.hidden){ playing = false; stopSpeech(); if (started) $('btnMain').textContent = L.UI.resume; } });
 
-renderPhases(); renderBeliefList();
+applyLang();
 </script>
 
 </body>
