@@ -167,6 +167,10 @@
     <div class="field">
       <label for="voice">Voice</label>
       <select id="voice"></select>
+      <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn btn-quiet" id="testVoice" type="button">Test the voice</button>
+        <span style="font-size:12.5px; color:var(--ink-soft)">No sound? Check your volume, tap Test again, and make sure you opened this page in your own browser — audio can be blocked inside previews.</span>
+      </div>
     </div>
     <div class="field">
       <label for="rate">Speaking pace</label>
@@ -335,15 +339,36 @@ function savePrefs(){ try { localStorage.setItem('rewire-prefs', JSON.stringify(
 function saveNos(){ try { localStorage.setItem('rewire-nos', JSON.stringify([...noSet])); } catch(e){} }
 (() => { try { const n = JSON.parse(localStorage.getItem('rewire-nos')||'[]'); noSet = new Set(n); } catch(e){} })();
 
-/* ---------------- voices ---------------- */
+/* ---------------- voices (curated: a few good ones, labeled by accent) ---------------- */
+function accentLabel(lang){
+  const m = {'en-US':'American','en-GB':'British','en-AU':'Australian','en-CA':'Canadian','en-IE':'Irish','en-IN':'Indian','en-ZA':'South African','en-NZ':'New Zealand'};
+  return m[lang] || 'English';
+}
+function cleanName(n){
+  return n.replace(/Microsoft |Google |Apple |Online|\(Natural\)|Natural|Desktop/gi,'').replace(/[-–—]\s*English.*$/i,'').replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim() || n;
+}
 function loadVoices(){
-  const sel = $('voice'); const vs = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-  if (!vs.length) return;
+  const sel = $('voice'); const all = speechSynthesis.getVoices();
+  if (!all.length) return;
+  const pool = all.filter(v => /^en[-_]?/i.test(v.lang));
+  const use = pool.length ? pool : all;
+  const score = v => (/natural/i.test(v.name)?8:0) + (/neural|online/i.test(v.name)?4:0) + (/google/i.test(v.name)?3:0) + (/aria|jenny|sonia|natasha|clara|libby|emma|ava|michelle/i.test(v.name)?2:0) + (/female|zira|susan|hazel|heather/i.test(v.name)?1:0);
+  const byAccent = {};
+  use.forEach(v => { const k = v.lang.replace('_','-'); (byAccent[k] = byAccent[k] || []).push(v); });
+  const picks = [];
+  ['en-US','en-CA','en-GB','en-AU','en-IE','en-IN'].forEach(l => {
+    const vs = (byAccent[l] || []).sort((a,b) => score(b) - score(a));
+    if (vs[0]) picks.push(vs[0]);
+    if (l === 'en-US' && vs[1]) picks.push(vs[1]);
+  });
+  if (!picks.length) picks.push(...use.slice(0, 3));
   sel.innerHTML = '';
-  vs.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = v.name.replace(/Microsoft |Google /,'') + ' (' + v.lang + ')'; sel.appendChild(o); });
-  const preferred = prefs.voice && vs.find(v => v.name === prefs.voice) ? prefs.voice :
-    (vs.find(v => /natural|neural/i.test(v.name)) || vs.find(v => /female|zira|aria|jenny/i.test(v.name)) || vs[0]).name;
-  sel.value = preferred;
+  picks.slice(0, 6).forEach(v => {
+    const o = document.createElement('option'); o.value = v.name;
+    o.textContent = cleanName(v.name) + ' — ' + accentLabel(v.lang.replace('_','-'));
+    sel.appendChild(o);
+  });
+  if (prefs.voice && picks.find(v => v.name === prefs.voice)) sel.value = prefs.voice;
 }
 if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
 else { $('spoken').textContent = 'This browser cannot speak text aloud. Open the written script below and read it at your own pace.'; }
@@ -362,7 +387,9 @@ function speakChunks(text, done){
     u.rate = +$('rate').value; u.pitch = 1;
     u.onend = () => { i++; setTimeout(next, 320); };
     u.onerror = () => { i++; setTimeout(next, 120); };
+    try { speechSynthesis.resume(); } catch (e) {}   /* un-sticks Chrome's silent paused state */
     speechSynthesis.speak(u);
+    try { speechSynthesis.resume(); } catch (e) {}
   };
   next();
 }
@@ -547,6 +574,16 @@ $('recapDone').onclick = () => { $('recap').hidden = true; qi++; playing = true;
 $('rate').oninput = () => { $('rateVal').textContent = (+$('rate').value).toFixed(2) + '×'; savePrefs(); };
 $('hold').oninput = () => { $('holdVal').textContent = $('hold').value + ' s'; savePrefs(); };
 $('voice').onchange = savePrefs;
+$('testVoice').onclick = () => {
+  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
+  const u = new SpeechSynthesisUtterance("This is how I'll sound. Ready when you are.");
+  const v = speechSynthesis.getVoices().find(x => x.name === $('voice').value);
+  if (v) u.voice = v;
+  u.rate = +$('rate').value;
+  try { speechSynthesis.resume(); } catch (e) {}
+  speechSynthesis.speak(u);
+  try { speechSynthesis.resume(); } catch (e) {}
+};
 if (prefs.rate){ $('rate').value = prefs.rate; $('rateVal').textContent = (+prefs.rate).toFixed(2) + '×'; }
 if (prefs.hold){ $('hold').value = prefs.hold; $('holdVal').textContent = prefs.hold + ' s'; }
 window.addEventListener('beforeunload', stopSpeech);
