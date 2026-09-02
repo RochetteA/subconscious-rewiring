@@ -326,6 +326,10 @@ en: {
     "Breathe in freedom. And exhale the old weight.",
     "Say softly to yourself. I release every belief that is not mine, that does not serve me, and that is not aligned with my highest truth. I let it go now."
   ],
+  REWIRE_GROUND: [
+    "Close your eyes once more. Feet on the floor. Take a deep breath in... and let it all the way out.",
+    "Feel the roots beneath you, and the light above you. You released what was heavy. Now we plant what is true."
+  ],
   REWIRE_INTRO: [
     "Now let's install new, empowering beliefs to take their place. I will read them one at a time. Repeat after me, silently or out loud, and imagine the words flowing into your heart, into your cells, into your subconscious."
   ],
@@ -459,6 +463,10 @@ fr: {
     "Remets-le à Dieu, au Créateur, à la Lumière. Regarde-le se dissoudre dans l'amour. Tu n'as plus besoin de le porter.",
     "Inspire la liberté. Et expire le vieux poids.",
     "Dis doucement en toi-même. Je libère chaque croyance qui n'est pas la mienne, qui ne me sert pas, et qui n'est pas alignée avec ma plus haute vérité. Je la laisse aller maintenant."
+  ],
+  REWIRE_GROUND: [
+    "Ferme les yeux encore une fois. Les pieds au sol. Prends une grande inspiration... et laisse tout sortir.",
+    "Sens les racines sous toi, et la lumière au-dessus de toi. Tu as libéré ce qui était lourd. Maintenant, nous plantons ce qui est vrai."
   ],
   REWIRE_INTRO: [
     "Maintenant, installons de nouvelles croyances porteuses à leur place. Je vais les lire une à la fois. Répète après moi, en silence ou à voix haute, et imagine les mots couler dans ton cœur, dans tes cellules, dans ton subconscient."
@@ -594,6 +602,10 @@ es: {
     "Inhala libertad. Y exhala el viejo peso.",
     "Di suavemente para ti misma. Suelto toda creencia que no es mía, que no me sirve, y que no está alineada con mi verdad más alta. La dejo ir ahora."
   ],
+  REWIRE_GROUND: [
+    "Cierra los ojos una vez más. Pies en el suelo. Toma una respiración profunda... y suéltala por completo.",
+    "Siente las raíces debajo de ti, y la luz sobre ti. Soltaste lo que pesaba. Ahora sembramos lo que es verdad."
+  ],
   REWIRE_INTRO: [
     "Ahora vamos a instalar nuevas creencias poderosas en su lugar. Las leeré una por una. Repite después de mí, en silencio o en voz alta, e imagina las palabras fluyendo hacia tu corazón, tus células, tu subconsciente."
   ],
@@ -702,8 +714,13 @@ function loadVoices(){
   else if (lang === 'en'){ const w = picks.find(p => /william/i.test(p.v.name)); if (w) sel.value = w.v.name; }
 }
 if ('speechSynthesis' in window){
-  loadVoices(); speechSynthesis.onvoiceschanged = loadVoices;
-  [300, 1200, 3500].forEach(ms => setTimeout(() => { if (!$('voice').options.length) loadVoices(); }, ms));
+  /* Some phones (Samsung especially) deliver the voice list late, never fire
+     onvoiceschanged, or hold voices back until the first touch — keep trying. */
+  let voiceTries = 0;
+  const bootVoices = () => { loadVoices(); if (!$('voice').options.length && voiceTries++ < 30) setTimeout(bootVoices, 400); };
+  bootVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+  document.addEventListener('pointerdown', () => { if (!$('voice').options.length) loadVoices(); }, { once: false, passive: true });
 }
 
 /* ================= speech engine ================= */
@@ -756,6 +773,7 @@ function buildQueue(){
   L.REGROUND2.forEach(t => queue.push(seg(3, t, { breathe: true, hold: 4 })));
   L.RELEASE.forEach(t => queue.push(seg(3, t, { breathe: true, hold: 3 })));
   queue.push(seg(4, '', { scopeGate: true }));
+  (L.REWIRE_GROUND || []).forEach(t => queue.push(seg(4, t, { breathe: true, hold: 3 })));
   L.REWIRE_INTRO.forEach(t => queue.push(seg(4, t)));
   L.BELIEFS.forEach((b, i) => queue.push(seg(4, b[1], { rewire: i })));
   L.SEALING.forEach(t => queue.push(seg(5, t, { breathe: true, hold: 3 })));
@@ -842,6 +860,7 @@ function playCurrent(){
     setStage(L.UI.setDoneLabel, L.UI.setDoneText(cat[0]), L.UI.setDoneSub);
     renderRecap(s.recapCat);
     $('recap').hidden = false;
+    setTimeout(() => { try { $('recap').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }, 200);
     const wasPlaying = playing;
     playing = false; $('btnMain').textContent = L.UI.resume;
     if (wasPlaying) speakChunks(L.UI.recapSpoken, null);
