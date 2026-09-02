@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A guided, read-aloud subconscious rewiring session in English, French, and Spanish.">
+<meta name="description" content="The Sway Test - a guided, read-aloud subconscious rewiring session in English, French, and Spanish.">
 <title>Rewired for Success</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Pinyon+Script&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -678,13 +678,23 @@ function speakChunks(text, done){
   const next = () => {
     if (chunkAbort) return;
     if (i >= parts.length){ done && done(); return; }
-    const u = new SpeechSynthesisUtterance(parts[i].trim());
+    const part = parts[i].trim();
+    const u = new SpeechSynthesisUtterance(part);
     const v = speechSynthesis.getVoices().find(x => x.name === $('voice').value);
     if (v) u.voice = v;
     u.lang = lang === 'fr' ? 'fr-CA' : lang === 'es' ? 'es-MX' : 'en-US';
     u.rate = +$('rate').value; u.pitch = 1;
-    u.onend = () => { i++; setTimeout(next, 320); };
-    u.onerror = () => { i++; setTimeout(next, 120); };
+    /* Some browsers (phones especially) report "end" far too early, which made every
+       pause start while the voice was still talking. Enforce a realistic floor based
+       on text length so timers only start once the audio has truly had time to play. */
+    const t0 = Date.now();
+    const estMs = Math.max(700, part.length * 60 / (+$('rate').value));
+    const finish = () => {
+      const remaining = Math.max(320, estMs - (Date.now() - t0));
+      i++; setTimeout(next, remaining > 320 ? remaining : 320);
+    };
+    u.onend = finish;
+    u.onerror = finish;
     try { speechSynthesis.resume(); } catch (e) {}
     speechSynthesis.speak(u);
     try { speechSynthesis.resume(); } catch (e) {}
@@ -837,11 +847,22 @@ function playCurrent(){
   speakChunks(s.text, () => {
     if (!playing) return;
     if (s.test !== undefined || s.rewire !== undefined){
-      holdTimer = setTimeout(advance, (+$('hold').value) * 1000);
+      startHold(+$('hold').value);
     } else {
       holdTimer = setTimeout(advance, (s.hold ? s.hold : 1.2) * 1000);
     }
   });
+}
+function startHold(sec){
+  const sub = $('stageSub'); const base = sub.textContent;
+  let left = sec;
+  const tick = () => {
+    if (left <= 0){ sub.textContent = base; advance(); return; }
+    sub.textContent = (base ? base + '   ' : '') + '· ' + left + ' ·';
+    left--;
+    holdTimer = setTimeout(tick, 1000);
+  };
+  tick();
 }
 function advance(){ if (qi < queue.length - 1){ qi++; playCurrent(); } }
 function jumpToPhase(i){
