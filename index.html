@@ -347,6 +347,8 @@ en: {
     recapTitleSuffix: ' — mark your sways',
     recapHint: 'Tap any belief that swayed you <strong>backward</strong> — those are your blocks. Leave the forward ones as they are. No memory test — just what you noticed.',
     recapForward: 'Forward', recapBack: 'Swayed back', recapContinue: 'Continue — ground for the next set',
+    recapSpoken: "That's the end of this set. Gently open your eyes and come back. Take a moment to mark which beliefs swayed you back. When you're done, press continue.",
+    chooseSpoken: 'Beautiful. Now open your eyes for a moment and choose. Rewire all fifty beliefs, or just the ones that swayed back?',
     setDoneLabel: 'Set complete', setDoneText: c => c + ' — done. Open your eyes gently.', setDoneSub: 'Mark your sways below, then continue.',
     testDoneLabel: 'Testing complete',
     testDoneSome: n => 'Your body said "not yet" to ' + n + ' belief' + (n > 1 ? 's' : '') + ". Let's release them.",
@@ -473,6 +475,8 @@ fr: {
     recapTitleSuffix: ' — note tes balancements',
     recapHint: "Touche chaque croyance qui t'a fait basculer vers l'<strong>arrière</strong> — ce sont tes blocages. Laisse les autres telles quelles. Pas de test de mémoire — juste ce que tu as remarqué.",
     recapForward: "Vers l'avant", recapBack: "Vers l'arrière", recapContinue: 'Continuer — ancrage pour la prochaine série',
+    recapSpoken: "C'est la fin de cette série. Ouvre doucement les yeux et reviens ici. Prends un moment pour noter les croyances qui t'ont fait basculer vers l'arrière. Quand tu as terminé, appuie sur continuer.",
+    chooseSpoken: "Magnifique. Ouvre les yeux un instant et choisis. Reprogrammer les cinquante croyances, ou seulement celles qui ont basculé vers l'arrière?",
     setDoneLabel: 'Série terminée', setDoneText: c => c + ' — terminé. Ouvre doucement les yeux.', setDoneSub: 'Note tes balancements ci-dessous, puis continue.',
     testDoneLabel: 'Test terminé',
     testDoneSome: n => "Ton corps a dit « pas encore » à " + n + ' croyance' + (n > 1 ? 's' : '') + '. Libérons-les.',
@@ -599,6 +603,8 @@ es: {
     recapTitleSuffix: ' — marca tus balanceos',
     recapHint: 'Toca cada creencia que te inclinó hacia <strong>atrás</strong>: esos son tus bloqueos. Deja las demás como están. No es prueba de memoria, solo lo que notaste.',
     recapForward: 'Hacia adelante', recapBack: 'Hacia atrás', recapContinue: 'Continuar — anclaje para la próxima serie',
+    recapSpoken: 'Ese es el final de esta serie. Abre los ojos suavemente y regresa. Toma un momento para marcar las creencias que te inclinaron hacia atrás. Cuando termines, presiona continuar.',
+    chooseSpoken: 'Hermoso. Abre los ojos un momento y elige. ¿Reprogramar las cincuenta creencias, o solo las que se inclinaron hacia atrás?',
     setDoneLabel: 'Serie completa', setDoneText: c => c + ' — listo. Abre los ojos suavemente.', setDoneSub: 'Marca tus balanceos abajo y continúa.',
     testDoneLabel: 'Prueba completa',
     testDoneSome: n => 'Tu cuerpo dijo «todavía no» a ' + n + ' creencia' + (n > 1 ? 's' : '') + '. Vamos a soltarlas.',
@@ -805,7 +811,9 @@ function playCurrent(){
     setStage(L.UI.setDoneLabel, L.UI.setDoneText(cat[0]), L.UI.setDoneSub);
     renderRecap(s.recapCat);
     $('recap').hidden = false;
+    const wasPlaying = playing;
     playing = false; $('btnMain').textContent = L.UI.resume;
+    if (wasPlaying) speakChunks(L.UI.recapSpoken, null);
     return;
   }
   if (s.releaseGate){
@@ -819,14 +827,17 @@ function playCurrent(){
     setStage(L.UI.chooseLabel, L.UI.chooseText, '');
     const c = $('choice'); c.innerHTML = '';
     const all = document.createElement('button'); all.className = 'btn btn-yes'; all.textContent = L.UI.allBtn;
-    all.onclick = () => { rewireScope = 'all'; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
+    all.onclick = () => { stopSpeech(); rewireScope = 'all'; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
     c.appendChild(all);
     if (noSet.size){
       const mine = document.createElement('button'); mine.className = 'btn btn-no'; mine.textContent = L.UI.mineBtn(noSet.size);
-      mine.onclick = () => { rewireScope = 'no'; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
+      mine.onclick = () => { stopSpeech(); rewireScope = 'no'; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
       c.appendChild(mine);
     }
-    c.classList.add('show'); playing = false; $('btnMain').textContent = L.UI.resume;
+    c.classList.add('show');
+    const wasPlayingChoice = playing;
+    playing = false; $('btnMain').textContent = L.UI.resume;
+    if (wasPlayingChoice) speakChunks(L.UI.chooseSpoken, null);
     return;
   }
   if (s.end){
@@ -898,11 +909,11 @@ function renderRecap(ci){
 $('btnMain').onclick = () => {
   if (!started){ noSet = new Set(); saveNos(); startSession(); return; }
   if (playing){ playing = false; stopSpeech(); $('btnMain').textContent = L.UI.resume; }
-  else { playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); }
+  else { stopSpeech(); playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); }
 };
 $('btnNext').onclick = () => { stopSpeech(); advance(); };
 $('btnBack').onclick = () => { stopSpeech(); if (qi > 0){ qi--; } playCurrent(); };
-$('recapDone').onclick = () => { $('recap').hidden = true; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
+$('recapDone').onclick = () => { stopSpeech(); $('recap').hidden = true; qi++; playing = true; $('btnMain').textContent = L.UI.pause; playCurrent(); };
 $('langSel').onchange = () => {
   lang = ['fr','es'].includes($('langSel').value) ? $('langSel').value : 'en';
   stopSpeech(); started = false; playing = false; queue = []; qi = 0;
