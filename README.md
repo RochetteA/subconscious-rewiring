@@ -1,3 +1,3 @@
-# Subconscious Rewiring
+# The Sway Test
 
-A guided, read-aloud subconscious rewiring session. Live at https://rochettea.github.io/subconscious-rewiring/
+A guided, read-aloud subconscious rewiring session (English / Francais / Espanol). Live at https://rochettea.github.io/the-sway-test/
